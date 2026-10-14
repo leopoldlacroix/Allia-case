@@ -5,25 +5,55 @@ Accountants receive client mail, mail from colleagues, and everything else in th
 - **source:** `client`, `internal`, or `external` (marketing, newsletters, spam, and other mail that is not from a person)
 - **topic:** `accounting`, `taxes`, `payroll`, `legal`, or `other`
 
-The sample has 20 emails and no answer key. The labels further down are the spec. [`tests/test_classify.py`](tests/test_classify.py) locks them, so a rule change that flips one email is visible.
+The assignment asks for classification only. Draft replies are out of scope here (no reply gold data, and the brief grades classification methodology).
 
-## Why rules
+The sample has 20 emails and no answer key. Provisional labels live in [`data/eval_labels.json`](data/eval_labels.json) so the original sample stays intact. Edit those labels freely; do not rewrite the sample to fit a method.
 
-Twenty unlabeled examples are enough to write the decision down, and too few to train or honestly score a model. Every result includes a `reason` that names the rule which fired. The classifier uses the Python standard library only.
+## Layout
 
-## Source
+```text
+classifier/
+  types.py                 # Email in, Classification out, Classifier protocol
+  registry.py              # method name → implementation
+  executor.py              # load any emails JSON + run a method
+  methods/
+    rules/                 # current method: address + keyword rules
+      source.py
+      topic.py
+data/
+  sample_accountant_emails.json   # input format (untouched)
+  eval_labels.json                # provisional gold labels by id
+tests/
+docs/assignement.md
+```
 
-The sender is the participant with `type` `from`. The firm domain is `accountingfirm.com`. The first matching rule wins.
+## Architecture
 
-1. The sender's domain is the firm, so the email is `internal`. That covers Sarah Johnson's own replies, and firm addresses such as `billing@` and `support@`.
-2. The sender is bulk or the text is spam, so the email is `external`. Bulk local-parts are `noreply`, `statements`, `updates`, `events`, and `winner`. Spam phrases, matched as written, are `lottery`, `you've won`, and `claim your prize`.
-3. Anyone else is a `client`.
+```text
+emails JSON  →  executor  →  Classifier.classify(email)  →  Classification
+                               ↑
+                    registry: "rules" (later: "llm", "ml")
+```
 
-## Topic
+To add a method later: implement `Classifier` under `classifier/methods/`, register it in `registry.py`. The executor and CLI stay the same. Point the CLI at any dataset path (sample or synthetic) that uses `{"emails": [...]}`.
 
-Topic follows the content, separately from the source. A newsletter about tax law is `external` and `taxes`.
+## Why rules first
 
-Each keyword scores 2 points in the subject and 1 point in the body and attachment names. A keyword counts once in each place, so writing "audit" twice does not raise the score. The highest score wins when it reaches 2. A score of 0 or 1 stays `other`, which is what keeps a passing mention of an audit from becoming an accounting email. Equal scores break toward the more specific topic: payroll, then legal, then taxes, then accounting.
+Twenty unlabeled examples are enough to write the decision down, and too few to train or honestly score a model. Every result includes a `reason` that names the rule which fired. Standard library only.
+
+## Source rules
+
+The sender is the participant with `type` `from`. The firm domain is `accountingfirm.com`. First match wins.
+
+1. Sender domain is the firm → `internal` (includes Sarah's replies, `billing@`, `support@`).
+2. Bulk local-part (`noreply`, `statements`, `updates`, `events`, `winner`) or spam phrase (`lottery`, `you've won`, `claim your prize`) → `external`.
+3. Anyone else → `client`.
+
+## Topic rules
+
+Topic follows content, separately from source. A tax newsletter is `external` and `taxes`.
+
+Each keyword scores 2 in the subject and 1 in the body and attachment names (once per field). Score must reach 2; otherwise `other`. Tie-break: payroll, legal, taxes, accounting.
 
 | Topic | Keywords |
 | --- | --- |
@@ -32,48 +62,20 @@ Each keyword scores 2 points in the subject and 1 point in the body and attachme
 | taxes | tax, deduction, filing, irs, r&d credit |
 | accounting | financial statement, invoice, audit, reconciliation, bookkeeping, depreciation, p&l, bank statement, card statement |
 
-`card statement` sits beside `bank statement` so a credit-card statement is accounting. The sample contains no payroll or legal mail. Those keywords are covered by unit tests.
-
 ## Judgment calls
 
-- Source follows the sender of this message. Sarah's reply on the Smith Manufacturing thread is internal, because she sent it.
-- A person writing from outside the firm is a client. Robert Martinez at FreshBites is a client on first contact.
-- The FreshBites note asks for financial statements and tax preparation, one keyword each. Neither score reaches 2, so the topic is `other`.
-- The Green Energy thank-you mentions an audit in the body only. The topic is `other`.
-- Bank and card statements come from `statements@`, so they are external, and the topic is accounting.
-
-## Labels on the sample
-
-| Email | Source | Topic |
-| --- | --- | --- |
-| Q4 financial statements, from Smith Manufacturing | client | accounting |
-| Team meeting on tax season, from David | internal | taxes |
-| Missing audit documents, from Lisa | internal | accounting |
-| QuickBooks renewal | external | other |
-| Lottery prize | external | other |
-| Invoice from billing@ | internal | accounting |
-| Tax-law newsletter | external | taxes |
-| Year-end tax planning, from TechStart | client | taxes |
-| Bank statement | external | accounting |
-| Client feedback on Green Energy, from David | internal | other |
-| Reply on the Q4 statements, from Sarah | internal | accounting |
-| Reply on the team meeting, from Sarah | internal | taxes |
-| Reply on the audit documents, from Sarah | internal | accounting |
-| New inquiry from FreshBites | client | other |
-| Reply on the tax planning, from Sarah | internal | taxes |
-| CPA webinar | external | taxes |
-| Client portal update, from IT | internal | other |
-| Credit card statement | external | accounting |
-| Reply on the client feedback, from Sarah | internal | other |
-| Client portal maintenance, from support@ | internal | other |
+- Source follows the sender of this message. Sarah's reply on a client thread is `internal`.
+- A person outside the firm is a `client`, including first-contact prospects (FreshBites).
+- FreshBites mixes tax and accounting asks below the threshold → topic `other`.
+- Green Energy thank-you mentions audit only in the body → topic `other`.
 
 ## Run
 
-From the repository root:
-
 ```bash
 python3 -m classifier data/sample_accountant_emails.json
+python3 -m classifier --method rules data/sample_accountant_emails.json
+python3 -m classifier path/to/synthetic_emails.json
 python3 -m unittest discover -s tests
 ```
 
-The classifier prints a JSON list of `id`, `source`, `topic`, and `reason`.
+Output is a JSON list of `id`, `source`, `topic`, `reason`, and `method`.

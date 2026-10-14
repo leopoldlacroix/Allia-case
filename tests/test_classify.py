@@ -1,42 +1,30 @@
+"""Unit tests for rules, registry, and the path-flexible executor.
+
+Eval labels live in data/eval_labels.json so the original sample is never edited
+to match a method. Rule edge cases use tiny synthetic emails built in-memory.
+"""
+
+from __future__ import annotations
+
 import io
 import json
+import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 
-from classifier.classify import classify_email, classify_file, load_emails, main
+from classifier.executor import load_emails, load_labels, main, run
+from classifier.methods.rules import classify_email
+from classifier.registry import available_methods, get_classifier
+from classifier.types import Email
 
 ROOT = Path(__file__).parents[1]
 SAMPLE = ROOT / "data" / "sample_accountant_emails.json"
-
-# Hand labels for the 20 sample emails, in file order.
-# Source follows the From address. Topic needs a subject keyword or two
-# different message keywords; one message keyword stays "other".
-EXPECTED = [
-    ("client", "accounting"),
-    ("internal", "taxes"),
-    ("internal", "accounting"),
-    ("external", "other"),
-    ("external", "other"),
-    ("internal", "accounting"),
-    ("external", "taxes"),
-    ("client", "taxes"),
-    ("external", "accounting"),
-    ("internal", "other"),
-    ("internal", "accounting"),
-    ("internal", "taxes"),
-    ("internal", "accounting"),
-    ("client", "other"),
-    ("internal", "taxes"),
-    ("external", "taxes"),
-    ("internal", "other"),
-    ("external", "accounting"),
-    ("internal", "other"),
-    ("internal", "other"),
-]
+EVAL_LABELS = ROOT / "data" / "eval_labels.json"
 
 
-def _email(subject: str, body: str, sender: str) -> dict:
+def _email(subject: str, body: str, sender: str) -> Email:
+    """Minimal Email that still satisfies the typed input contract."""
     return {
         "id": "synthetic",
         "subject": subject,
@@ -46,35 +34,83 @@ def _email(subject: str, body: str, sender: str) -> dict:
     }
 
 
-class SampleTests(unittest.TestCase):
-    def test_sample_labels(self):
+class EvalSetTests(unittest.TestCase):
+    def test_rules_match_eval_labels(self) -> None:
         emails = load_emails(SAMPLE)
-        self.assertEqual(len(emails), len(EXPECTED))
-        for email, expected in zip(emails, EXPECTED):
+        labels = load_labels(EVAL_LABELS)
+        self.assertEqual(len(emails), len(labels))
+        for email in emails:
+            expected = labels[email["id"]]
             result = classify_email(email)
             self.assertEqual(
                 (result.source, result.topic),
                 expected,
                 email["subject"],
             )
+            self.assertEqual(result.method, "rules")
             self.assertTrue(result.reason)
 
-    def test_cli_prints_classifications(self):
+    def test_executor_accepts_any_emails_path(self) -> None:
+        """Synthetic datasets use the same {"emails": [...]} shape."""
+        payload = {
+            "emails": [
+                _email(
+                    "March payroll",
+                    "Please process salaries.",
+                    "cfo@client.com",
+                )
+            ]
+        }
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            suffix=".json",
+            delete=False,
+            encoding="utf-8",
+        ) as handle:
+            json.dump(payload, handle)
+            path = Path(handle.name)
+        try:
+            results = run(path, method="rules")
+        finally:
+            path.unlink()
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].source, "client")
+        self.assertEqual(results[0].topic, "payroll")
+
+    def test_cli_prints_classifications(self) -> None:
         buffer = io.StringIO()
         with redirect_stdout(buffer):
-            main([str(SAMPLE)])
+            main([str(SAMPLE), "--method", "rules"])
         payload = json.loads(buffer.getvalue())
+        labels = load_labels(EVAL_LABELS)
         self.assertEqual(len(payload), 20)
-        self.assertEqual(set(payload[0]), {"id", "source", "topic", "reason"})
         self.assertEqual(
-            [(row["source"], row["topic"]) for row in payload],
-            EXPECTED,
+            set(payload[0]),
+            {"id", "source", "topic", "reason", "method"},
         )
-        self.assertEqual(classify_file(SAMPLE), payload)
+        for row in payload:
+            self.assertEqual(
+                (row["source"], row["topic"]),
+                labels[row["id"]],
+                row["id"],
+            )
+            self.assertEqual(row["method"], "rules")
+
+
+class RegistryTests(unittest.TestCase):
+    def test_rules_is_registered(self) -> None:
+        self.assertIn("rules", available_methods())
+        classifier = get_classifier("rules")
+        self.assertEqual(classifier.name, "rules")
+
+    def test_unknown_method_raises(self) -> None:
+        with self.assertRaises(ValueError):
+            get_classifier("does-not-exist")
 
 
 class RuleTests(unittest.TestCase):
-    def test_repeated_audit_in_the_body_stays_other(self):
+    def test_repeated_audit_in_the_body_stays_other(self) -> None:
+        # Same keyword twice in the body still scores 1 → below threshold.
         email = _email(
             "Thanks",
             "The audit went well. Really, the audit went well.",
@@ -83,7 +119,7 @@ class RuleTests(unittest.TestCase):
         result = classify_email(email)
         self.assertEqual((result.source, result.topic), ("internal", "other"))
 
-    def test_spam_phrase_from_a_normal_address_is_external(self):
+    def test_spam_phrase_from_a_normal_address_is_external(self) -> None:
         email = _email(
             "Hello",
             "Claim your prize today.",
@@ -93,7 +129,7 @@ class RuleTests(unittest.TestCase):
         self.assertEqual(result.source, "external")
         self.assertIn("claim your prize", result.reason)
 
-    def test_payroll_and_legal_keywords(self):
+    def test_payroll_and_legal_keywords(self) -> None:
         payroll = classify_email(
             _email("March payroll", "See attached.", "cfo@client.com")
         )
@@ -107,7 +143,8 @@ class RuleTests(unittest.TestCase):
         self.assertEqual((payroll.source, payroll.topic), ("client", "payroll"))
         self.assertEqual((legal.source, legal.topic), ("internal", "legal"))
 
-    def test_tie_goes_to_the_more_specific_topic(self):
+    def test_tie_goes_to_the_more_specific_topic(self) -> None:
+        # Subject hits both payroll and taxes; payroll is listed first → wins.
         email = _email(
             "Payroll tax notice",
             "Please read.",

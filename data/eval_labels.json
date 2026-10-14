@@ -1,0 +1,126 @@
+{
+  "description": "Provisional gold labels for data/sample_accountant_emails.json. The sample file is left intact; revise these labels freely.",
+  "emails_path": "data/sample_accountant_emails.json",
+  "labels": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "source": "client",
+      "topic": "accounting",
+      "note": "Q4 financial statements from Smith Manufacturing"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "source": "internal",
+      "topic": "taxes",
+      "note": "Team meeting on tax season from David"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "source": "internal",
+      "topic": "accounting",
+      "note": "Missing audit documents from Lisa"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440004",
+      "source": "external",
+      "topic": "other",
+      "note": "QuickBooks renewal"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440005",
+      "source": "external",
+      "topic": "other",
+      "note": "Lottery prize spam"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440006",
+      "source": "internal",
+      "topic": "accounting",
+      "note": "Invoice from billing@"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440007",
+      "source": "external",
+      "topic": "taxes",
+      "note": "Tax-law newsletter"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440008",
+      "source": "client",
+      "topic": "taxes",
+      "note": "Year-end tax planning from TechStart"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440009",
+      "source": "external",
+      "topic": "accounting",
+      "note": "Bank statement"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440010",
+      "source": "internal",
+      "topic": "other",
+      "note": "Client feedback thank-you; audit mentioned only in body"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440011",
+      "source": "internal",
+      "topic": "accounting",
+      "note": "Sarah reply on Q4 statements"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440012",
+      "source": "internal",
+      "topic": "taxes",
+      "note": "Sarah reply on team meeting"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440013",
+      "source": "internal",
+      "topic": "accounting",
+      "note": "Sarah reply on audit documents"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440014",
+      "source": "client",
+      "topic": "other",
+      "note": "FreshBites prospect; mixed tax and accounting asks below threshold"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440015",
+      "source": "internal",
+      "topic": "taxes",
+      "note": "Sarah reply on tax planning"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440016",
+      "source": "external",
+      "topic": "taxes",
+      "note": "CPA webinar"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440017",
+      "source": "internal",
+      "topic": "other",
+      "note": "Client portal update from IT"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440018",
+      "source": "external",
+      "topic": "accounting",
+      "note": "Credit card statement"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440019",
+      "source": "internal",
+      "topic": "other",
+      "note": "Sarah reply on client feedback"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440020",
+      "source": "internal",
+      "topic": "other",
+      "note": "Portal maintenance from support@"
+    }
+  ]
+}
