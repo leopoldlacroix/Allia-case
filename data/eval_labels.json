@@ -59,7 +59,7 @@
     {
       "id": "550e8400-e29b-41d4-a716-446655440010",
       "source": "internal",
-      "topic": "other",
+      "topic": "accounting",
       "note": "Client feedback thank-you; audit mentioned only in body"
     },
     {
@@ -83,7 +83,7 @@
     {
       "id": "550e8400-e29b-41d4-a716-446655440014",
       "source": "client",
-      "topic": "other",
+      "topic": "accounting",
       "note": "FreshBites prospect; mixed tax and accounting asks below threshold"
     },
     {
