@@ -73,24 +73,32 @@ def require_settings(settings: LlmSettings | None = None) -> LlmSettings:
     return settings
 
 
-def require_langchain() -> None:
-    """Raise LlmConfigError if LangChain / OpenRouter packages are not installed."""
+def _silence_python314_langchain_noise() -> None:
+    """Filter known upstream warnings on Python 3.14 (filters stay process-wide)."""
     import warnings
 
-    # langchain_core still imports pydantic.v1 for legacy models. On Python 3.14+
-    # that emits a UserWarning; it is harmless for our Pydantic v2 schemas.
-    with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore",
-            message=r".*Pydantic V1 functionality isn't compatible with Python 3\.14.*",
-            category=UserWarning,
-            module=r"langchain_core\.utils\.pydantic",
-        )
-        try:
-            import langchain  # noqa: F401
-            import langchain_openrouter  # noqa: F401
-        except ImportError as exc:
-            raise LlmConfigError(
-                "LangChain packages missing; run: pip install -r requirements.txt "
-                f"({exc})"
-            ) from exc
+    warnings.filterwarnings(
+        "ignore",
+        message=r".*Pydantic V1 functionality isn't compatible with Python 3\.14.*",
+        category=UserWarning,
+        module=r"langchain_core\.utils\.pydantic",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        message=r".*asyncio\.iscoroutinefunction.*",
+        category=DeprecationWarning,
+        module=r"langsmith\._internal\._beta_decorator",
+    )
+
+
+def require_langchain() -> None:
+    """Raise LlmConfigError if LangChain / OpenRouter packages are not installed."""
+    _silence_python314_langchain_noise()
+    try:
+        import langchain  # noqa: F401
+        import langchain_openrouter  # noqa: F401
+    except ImportError as exc:
+        raise LlmConfigError(
+            "LangChain packages missing; run: pip install -r requirements.txt "
+            f"({exc})"
+        ) from exc
