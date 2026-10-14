@@ -90,8 +90,6 @@ class LlmClassifier:
         from classifier.methods.llm.agent import extract_structured_result, invoke_agent
 
         assert self._agent is not None
-        # Context injects from/subject/body into tools (ToolRuntime) so the model
-        # does not have to pass those args — free models often pass garbage like ": ".
         state = invoke_agent(self._agent, email)
         structured = extract_structured_result(state)
         if structured is None:

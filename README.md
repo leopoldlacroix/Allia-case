@@ -36,9 +36,7 @@ emails JSON  →  executor  →  Classifier.classify(email)  →  Classification
                     registry: "rules" | "llm"
 ```
 
-`--method llm` runs a LangChain agent on OpenRouter: helper tools (sender / bulk / topic scores) plus a final `ToolStrategy` schema (`source`, `topic`, `reason`). Native JSON `response_format` is not combined with tools (fragile on free models).
-
-Helper tools take **no model-visible arguments**: they read the current email from `ToolRuntime` context ([LangChain tools docs](https://docs.langchain.com/oss/python/langchain/tools)). That avoids free models inventing bad args (e.g. `from_email: ": "`). `return_direct` is not used on helpers — that would skip the final classification step. Agent steps are capped with `LLM_RECURSION_LIMIT` (default 12).
+`--method llm` sends the email (from, subject, body, attachment names) to an OpenRouter model via LangChain `create_agent`, and collects labels through a `ToolStrategy` `ClassificationResult` (`source`, `topic`, `reason`). No helper tools — the payload is small enough for the model to judge directly. Steps are capped with `LLM_RECURSION_LIMIT` (default 6).
 
 ## Methods
 
