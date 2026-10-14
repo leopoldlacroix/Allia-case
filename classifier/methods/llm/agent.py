@@ -11,8 +11,11 @@ from classifier.methods.llm.prompts import system_prompt
 from classifier.methods.llm.schemas import ClassificationResult
 from classifier.types import Email
 
-# Single model pass → ClassificationResult (no helper-tool loop).
-DEFAULT_RECURSION_LIMIT = 1
+# LangGraph counts *steps*, not "LLM calls". ToolStrategy needs at least:
+#   1) model emits ClassificationResult tool call
+#   2) tool / structured-output node runs
+# Limit 1 stops after step 1 → GraphRecursionError and no labels.
+DEFAULT_RECURSION_LIMIT = 3
 
 
 def build_chat_model(settings: LlmSettings) -> Any:

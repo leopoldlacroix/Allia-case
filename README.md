@@ -36,7 +36,7 @@ emails JSON  →  executor  →  Classifier.classify(email)  →  Classification
                     registry: "rules" | "llm"
 ```
 
-`--method llm` sends the email (from, subject, body, attachment names) to any **OpenAI-compatible** chat API via LangChain `ChatOpenAI` + `create_agent`, and collects labels through a `ToolStrategy` `ClassificationResult` (`source`, `topic`, `reason`). No helper tools. Steps are capped with `LLM_RECURSION_LIMIT` (default 1).
+`--method llm` sends the email (from, subject, body, attachment names) to any **OpenAI-compatible** chat API via LangChain `ChatOpenAI` + `create_agent`, and collects labels through a `ToolStrategy` `ClassificationResult` (`source`, `topic`, `reason`). No helper tools. Steps are capped with `LLM_RECURSION_LIMIT` (default 3 — needed for model + structured tool; `1` stops before any result).
 
 Configure only generic env vars (see [`.env.example`](.env.example)):
 
