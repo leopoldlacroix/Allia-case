@@ -18,6 +18,18 @@ Brief: [`docs/assignement.md`](docs/assignement.md). Sample: [`data/sample_accou
 4. **Treat labels as provisional.** [`data/eval_labels.json`](data/eval_labels.json) was hand-built (largely aligned with rules) so we can compare runs. It is **not** ground truth. The compare dashboard shows it as one more row next to model outputs.
 5. **Optimize for inspection.** Save each run under `runs/results/`, then regenerate a side-by-side HTML page to spot model consensus vs provisional labels.
 
+## Review notes (discuss with Allia)
+
+Talking points for review with **jguepin** / **EBazarov** (`jguepin@getallia.com`, `ebazarov@getallia.com`):
+
+- **No official gold labels.** [`data/eval_labels.json`](data/eval_labels.json) is a provisional baseline. Compare treats it as one peer row, not ground truth. A few labels (#010 feedback thread, #014 prospect) were adjusted when several runs agreed against the first pass.
+- **Ambiguous topic cases worth aligning on:** vendor renewals (QuickBooks → `other` vs `accounting`), IT portal mail (`other` despite “expense” wording), client-feedback threads (purpose = `other` vs keyword = `accounting`), and whether bank/CC *statements* should both be `accounting`.
+- **Source trap:** accountant replies *about* a client must stay `internal` (From domain). Richer To/Cc in the LLM payload helped stronger models but confused a small chat model that treated client addresses in To/Cc as “this is client mail.”
+- **What worked best locally:** rules (perfect source, transparent) and `tev1-4b` systemone (highest both-agree with provisional). Tiny chat models are for experimentation, not the quality bar.
+- **Product call:** confirm whether first-contact prospects stay `client` (current choice) and whether feedback-from-client vs feedback-forwarded-internally should differ on source.
+
+Artifacts: open `runs/compare.html` after `WORKERS=4 ./scripts/run_ollama_suite.sh` (see [`runs/README.md`](runs/README.md)).
+
 ## Solution shape
 
 ```text
