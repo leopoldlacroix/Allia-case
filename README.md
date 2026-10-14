@@ -38,7 +38,15 @@ emails JSON  →  executor  →  Classifier.classify(email)  →  Classification
 
 `--method llm` sends the email (from, subject, body, attachment names) to any **OpenAI-compatible** chat API via LangChain `ChatOpenAI` + `create_agent`, and collects labels through a `ToolStrategy` `ClassificationResult` (`source`, `topic`, `reason`). No helper tools. Steps are capped with `LLM_RECURSION_LIMIT` (default 1).
 
-Configure with `LLM_API_KEY`, `LLM_MODEL`, and `LLM_BASE_URL` (default `https://openrouter.ai/api/v1`). Legacy `OPENROUTER_*` env names still work. To switch provider later, only change those three values.
+Configure only generic env vars (see [`.env.example`](.env.example)):
+
+| Variable | Meaning |
+| --- | --- |
+| `LLM_API_KEY` | Provider API key |
+| `LLM_MODEL` | Model id |
+| `LLM_BASE_URL` | OpenAI-compatible base URL (default `https://openrouter.ai/api/v1`) |
+
+Switch provider by changing those three values in `.env` — no code changes.
 
 ## Methods
 
@@ -54,7 +62,7 @@ Requires [`requirements.txt`](requirements.txt) and a `.env` (see [`.env.example
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -U -r requirements.txt
-# set OPENROUTER_API_KEY and OPENROUTER_MODEL in .env (free slug recommended)
+# set LLM_API_KEY, LLM_MODEL, LLM_BASE_URL in .env
 ```
 
 On Python 3.14, LangChain may still ship a harmless Pydantic v1 compatibility warning upstream; this project filters it when loading the llm method.

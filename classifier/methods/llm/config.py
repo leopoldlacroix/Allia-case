@@ -11,7 +11,7 @@ from classifier.methods.llm.errors import LlmConfigError
 # Repo root: classifier/methods/llm/config.py → parents[3]
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 
-# Default = OpenRouter's OpenAI-compatible API. Override LLM_BASE_URL for others.
+# Used only when LLM_BASE_URL is unset. Override per provider in .env.
 DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
 
 
@@ -31,13 +31,8 @@ def env_flag(name: str, default: bool) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def _first_env(*names: str) -> str:
-    """Return the first non-empty env value among names (supports legacy aliases)."""
-    for name in names:
-        value = (os.getenv(name) or "").strip()
-        if value:
-            return value
-    return ""
+def _env(name: str, default: str = "") -> str:
+    return (os.getenv(name) or default).strip()
 
 
 @dataclass(frozen=True)
@@ -55,19 +50,18 @@ class LlmSettings:
 def read_settings() -> LlmSettings:
     """Read settings after dotenv load. Does not validate completeness."""
     load_dotenv_files()
-    retries_raw = os.getenv("LLM_MAX_RETRIES", "3").strip() or "3"
+    retries_raw = _env("LLM_MAX_RETRIES", "3") or "3"
     try:
         max_retries = max(1, int(retries_raw))
     except ValueError:
         max_retries = 3
-    base_url = _first_env("LLM_BASE_URL") or DEFAULT_BASE_URL
+    base_url = _env("LLM_BASE_URL") or DEFAULT_BASE_URL
     return LlmSettings(
-        # Prefer generic LLM_* ; keep OPENROUTER_* as aliases for existing .env files.
-        api_key=_first_env("LLM_API_KEY", "OPENROUTER_API_KEY"),
-        model=_first_env("LLM_MODEL", "OPENROUTER_MODEL"),
+        api_key=_env("LLM_API_KEY"),
+        model=_env("LLM_MODEL"),
         base_url=base_url.rstrip("/"),
-        app_url=_first_env("LLM_APP_URL", "OPENROUTER_APP_URL") or None,
-        app_title=_first_env("LLM_APP_TITLE", "OPENROUTER_APP_TITLE") or None,
+        app_url=_env("LLM_APP_URL") or None,
+        app_title=_env("LLM_APP_TITLE") or None,
         max_retries=max_retries,
         allow_fallback=env_flag("LLM_FALLBACK", True),
         strict=env_flag("LLM_STRICT", False),
@@ -79,9 +73,9 @@ def require_settings(settings: LlmSettings | None = None) -> LlmSettings:
     settings = settings or read_settings()
     missing: list[str] = []
     if not settings.api_key:
-        missing.append("LLM_API_KEY (or OPENROUTER_API_KEY)")
+        missing.append("LLM_API_KEY")
     if not settings.model:
-        missing.append("LLM_MODEL (or OPENROUTER_MODEL)")
+        missing.append("LLM_MODEL")
     if missing:
         raise LlmConfigError(
             "missing " + ", ".join(missing) + " (set them in .env; see .env.example)"

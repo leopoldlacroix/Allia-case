@@ -46,9 +46,7 @@ class RetryableTests(unittest.TestCase):
 
 class FallbackTests(unittest.TestCase):
     def test_missing_api_key_falls_back_to_rules(self) -> None:
-        classifier = LlmClassifier(
-            _settings(api_key="", model="dots-studio/dots-3-note-preview:free")
-        )
+        classifier = LlmClassifier(_settings(api_key="", model="test/model"))
         result = classifier.classify(_email())
         self.assertEqual(result.method, "rules")
         self.assertIn("llm unavailable", result.reason)
