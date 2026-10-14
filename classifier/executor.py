@@ -13,6 +13,7 @@ import os
 import sys
 from pathlib import Path
 
+from classifier.log import log
 from classifier.registry import available_methods, get_classifier
 from classifier.types import Classification, Classifier, Email, Source, Topic
 
@@ -51,8 +52,22 @@ def run(
     """Classify every email in emails_path with the chosen method."""
     if allow_fallback is False:
         os.environ["LLM_FALLBACK"] = "0"
+    emails = load_emails(emails_path)
+    total = len(emails)
+    log(f"[classifier] method={method} emails={total} path={emails_path}")
     classifier = get_classifier(method)
-    results = [classifier.classify(email) for email in load_emails(emails_path)]
+    results: list[Classification] = []
+    for index, email in enumerate(emails, start=1):
+        subject = (email.get("subject") or "(no subject)").replace("\n", " ")
+        if len(subject) > 70:
+            subject = subject[:67] + "..."
+        log(f"[classifier] {index}/{total} start  id={email.get('id', '?')}  {subject}")
+        result = classifier.classify(email)
+        results.append(result)
+        log(
+            f"[classifier] {index}/{total} done   "
+            f"method={result.method} source={result.source} topic={result.topic}"
+        )
     _maybe_print_summary(classifier)
     return results
 

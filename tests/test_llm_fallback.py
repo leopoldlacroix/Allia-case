@@ -71,7 +71,7 @@ class FallbackTests(unittest.TestCase):
             classifier,
             "_invoke_once",
             side_effect=ConnectionError("connection reset"),
-        ), patch.object(classifier, "_sleep_backoff"):
+        ), patch("classifier.methods.llm.time.sleep"):
             result = classifier.classify(_email())
 
         self.assertEqual(result.method, "rules")
@@ -86,8 +86,10 @@ class FallbackTests(unittest.TestCase):
         with patch.object(
             classifier,
             "_invoke_once",
-            side_effect=LlmInvokeError("agent returned no structured ClassificationResult"),
-        ) as invoke, patch.object(classifier, "_sleep_backoff") as sleep:
+            side_effect=LlmInvokeError(
+                "agent returned no structured ClassificationResult"
+            ),
+        ) as invoke, patch("classifier.methods.llm.time.sleep") as sleep:
             result = classifier.classify(_email())
 
         self.assertEqual(result.method, "rules")

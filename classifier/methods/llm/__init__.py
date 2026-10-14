@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import random
-import sys
 import time
 from typing import Any
 
+from classifier.log import log
 from classifier.methods.llm.config import (
     LlmSettings,
     read_settings,
@@ -37,18 +37,26 @@ class LlmClassifier:
             # Settings first so a missing key falls back without requiring LangChain.
             self._settings = require_settings(self._settings)
             require_langchain()
+            log(
+                f"[llm] building agent model={self._settings.model} "
+                f"retries={self._settings.max_retries}"
+            )
             from classifier.methods.llm.agent import build_agent
 
             self._agent = build_agent(self._settings)
             self._agent_error = None
+            log("[llm] agent ready")
         except LlmConfigError as exc:
             self._agent = None
             self._agent_error = str(exc)
+            log(f"[llm] agent not available: {exc}")
         except Exception as exc:  # noqa: BLE001 — surface unexpected build errors
             self._agent = None
             self._agent_error = f"agent build failed: {exc}"
+            log(f"[llm] agent build failed: {exc}")
 
     def classify(self, email: Email) -> Classification:
+        email_id = email.get("id", "?")
         if self._agent is None:
             return self._handle_failure(email, self._agent_error or "agent unavailable")
 
@@ -56,16 +64,24 @@ class LlmClassifier:
         attempts = self._settings.max_retries
         for attempt in range(1, attempts + 1):
             try:
+                log(f"[llm] invoke id={email_id} attempt={attempt}/{attempts} …")
+                started = time.monotonic()
                 result = self._invoke_once(email)
+                elapsed = time.monotonic() - started
                 self.llm_successes += 1
+                log(
+                    f"[llm] ok id={email_id} "
+                    f"source={result.source} topic={result.topic} ({elapsed:.1f}s)"
+                )
                 return result
             except Exception as exc:  # noqa: BLE001
                 last_error = f"{type(exc).__name__}: {exc}"
+                log(f"[llm] error id={email_id} attempt={attempt}/{attempts}: {last_error}")
                 if attempt < attempts and is_retryable(exc):
-                    self._sleep_backoff(attempt)
+                    delay = (2 ** (attempt - 1)) + random.uniform(0, 0.5)
+                    log(f"[llm] retrying in {delay:.1f}s …")
+                    time.sleep(delay)
                     continue
-                if is_retryable(exc) or attempt >= attempts:
-                    return self._handle_failure(email, last_error)
                 return self._handle_failure(email, last_error)
 
         return self._handle_failure(email, last_error or "unknown error")
@@ -97,26 +113,16 @@ class LlmClassifier:
                 cause
             )
         self.fallback_count += 1
-        print(
-            f"[llm] fallback for {email.get('id', '?')}: {cause}",
-            file=sys.stderr,
-        )
+        log(f"[llm] fallback id={email.get('id', '?')}: {cause}")
         return rules_fallback(email, cause)
-
-    @staticmethod
-    def _sleep_backoff(attempt: int) -> None:
-        # attempt 1 → ~1s, attempt 2 → ~2s, plus jitter
-        delay = (2 ** (attempt - 1)) + random.uniform(0, 0.5)
-        time.sleep(delay)
 
     def print_summary(self) -> None:
         total = self.llm_successes + self.fallback_count
         if total == 0:
             return
-        print(
-            f"[llm] done: {self.llm_successes} llm, {self.fallback_count} rules-fallback "
-            f"(of {total})",
-            file=sys.stderr,
+        log(
+            f"[llm] summary: {self.llm_successes} llm, "
+            f"{self.fallback_count} rules-fallback (of {total})"
         )
 
 

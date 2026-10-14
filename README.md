@@ -81,6 +81,8 @@ python3 -m classifier --method llm --no-fallback data/sample_accountant_emails.j
 python3 -m unittest discover -s tests
 ```
 
+Progress lines go to stderr (`[classifier] 3/20 …`, `[llm] invoke …`). JSON results stay on stdout. Free models can take many seconds per email — that is normal, not a freeze.
+
 ## Review in the browser
 
 ```bash
