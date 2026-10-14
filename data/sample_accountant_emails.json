@@ -1,0 +1,628 @@
+{
+  "emails": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "subject": "Q4 Financial Statements - Smith Manufacturing Co.",
+      "body": "Dear Sarah,\n\nI hope this email finds you well. I'm reaching out regarding the Q4 financial statements for Smith Manufacturing Co. that we discussed last week.\n\nI've attached the preliminary statements for your review. There are a few items that need clarification:\n\n1. The depreciation schedule for the new equipment purchased in October\n2. The classification of certain expenses in the P&L\n3. The reconciliation of the accounts receivable aging report\n\nPlease let me know if you have any questions or if you'd like to schedule a call to discuss these items in detail.\n\nBest regards,\nMichael Chen\nSenior Accountant\nSmith Manufacturing Co.",
+      "sent_at": "2024-01-15T09:30:00Z",
+      "created_at": "2024-01-15T09:30:00Z",
+      "updated_at": "2024-01-15T09:30:00Z",
+      "thread_id": "thread_001",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440101",
+          "email": "michael.chen@smithmanufacturing.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440102",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": false
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440201",
+          "file_name": "Q4_Financial_Statements_Smith_Manufacturing.pdf",
+          "file_type": "application/pdf",
+          "file_size": "2.4MB"
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440202",
+          "file_name": "Depreciation_Schedule_2024.xlsx",
+          "file_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "file_size": "856KB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "subject": "Internal: Team Meeting - Tax Season Preparation",
+      "body": "Hi Team,\n\nJust a reminder about our team meeting tomorrow at 2 PM to discuss tax season preparation.\n\nAgenda:\n- Review of new tax software implementation\n- Workload distribution for upcoming busy season\n- Client communication protocols\n- Training schedule for new team members\n\nPlease come prepared with any questions or concerns.\n\nThanks,\nDavid\n\n---\nDavid Rodriguez\nPartner\nJohnson & Associates CPA",
+      "sent_at": "2024-01-15T14:15:00Z",
+      "created_at": "2024-01-15T14:15:00Z",
+      "updated_at": "2024-01-15T14:15:00Z",
+      "thread_id": "thread_002",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440103",
+          "email": "david.rodriguez@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440104",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440105",
+          "email": "team@accountingfirm.com",
+          "type": "cc",
+          "is_read": true
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "subject": "URGENT: Missing Documentation for Johnson Corp Audit",
+      "body": "Sarah,\n\nI need the missing documentation for the Johnson Corp audit ASAP. The deadline is this Friday and we're missing:\n\n- Bank reconciliation for December 2023\n- Fixed asset register\n- Inventory count sheets\n- Related party transaction details\n\nPlease send these documents immediately or let me know if there are any issues.\n\nRegards,\nLisa Thompson\nAudit Manager",
+      "sent_at": "2024-01-15T16:45:00Z",
+      "created_at": "2024-01-15T16:45:00Z",
+      "updated_at": "2024-01-15T16:45:00Z",
+      "thread_id": "thread_003",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440106",
+          "email": "lisa.thompson@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440107",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": false
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440004",
+      "subject": "Your QuickBooks Pro 2024 Subscription Renewal",
+      "body": "Dear Valued Customer,\n\nYour QuickBooks Pro 2024 subscription is due for renewal on February 1, 2024.\n\nRenew now and save 20% on your annual subscription!\n\nFeatures included:\n- Advanced reporting and analytics\n- Multi-user access\n- Automated bank feeds\n- Mobile app access\n- Priority customer support\n\nClick here to renew: [LINK]\n\nIf you have any questions, please contact our support team.\n\nBest regards,\nQuickBooks Team\nIntuit Inc.",
+      "sent_at": "2024-01-15T10:00:00Z",
+      "created_at": "2024-01-15T10:00:00Z",
+      "updated_at": "2024-01-15T10:00:00Z",
+      "thread_id": "thread_004",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440108",
+          "email": "noreply@quickbooks.intuit.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440109",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440005",
+      "subject": "CONGRATULATIONS! You've Won $1,000,000!",
+      "body": "CONGRATULATIONS!\n\nYou have been selected as the winner of $1,000,000 in our international lottery!\n\nTo claim your prize, please provide:\n- Your bank account details\n- Social security number\n- Date of birth\n- Mother's maiden name\n\nThis is a limited time offer. Respond within 24 hours to claim your prize!\n\nBest regards,\nInternational Lottery Commission\n(Not affiliated with any government agency)",
+      "sent_at": "2024-01-15T08:30:00Z",
+      "created_at": "2024-01-15T08:30:00Z",
+      "updated_at": "2024-01-15T08:30:00Z",
+      "thread_id": "thread_005",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440110",
+          "email": "winner@international-lottery.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440111",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440006",
+      "subject": "Invoice #INV-2024-001 - Professional Services",
+      "body": "Dear Sarah Johnson,\n\nPlease find attached invoice #INV-2024-001 for professional accounting services rendered in December 2023.\n\nInvoice Details:\n- Period: December 1-31, 2023\n- Amount: $2,450.00\n- Due Date: January 31, 2024\n- Payment Terms: Net 30\n\nServices provided:\n- Monthly bookkeeping and reconciliation\n- Financial statement preparation\n- Tax planning consultation\n- Year-end closing assistance\n\nPayment can be made via:\n- Bank transfer (details in invoice)\n- Check mailed to our office\n- Online payment portal\n\nThank you for your business.\n\nBest regards,\nJohnson & Associates CPA\n123 Business Street\nAnytown, ST 12345",
+      "sent_at": "2024-01-15T11:20:00Z",
+      "created_at": "2024-01-15T11:20:00Z",
+      "updated_at": "2024-01-15T11:20:00Z",
+      "thread_id": "thread_006",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440112",
+          "email": "billing@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440113",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": false
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440203",
+          "file_name": "INV-2024-001_Professional_Services.pdf",
+          "file_type": "application/pdf",
+          "file_size": "1.2MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440007",
+      "subject": "New Tax Law Changes for 2024 - Important Update",
+      "body": "Dear Accounting Professional,\n\nWe're excited to share important updates about the new tax law changes effective January 1, 2024.\n\nKey Changes:\n- Increased standard deduction amounts\n- Modified business expense deductions\n- New credits for small businesses\n- Updated depreciation schedules\n- Changes to retirement contribution limits\n\nJoin our upcoming webinar on January 25th to learn more about these changes and how they affect your clients.\n\nRegister now: [WEBINAR LINK]\n\nWe also have comprehensive guides and checklists available for purchase.\n\nBest regards,\nTax Law Updates Team\nProfessional Tax Resources Inc.",
+      "sent_at": "2024-01-15T13:00:00Z",
+      "created_at": "2024-01-15T13:00:00Z",
+      "updated_at": "2024-01-15T13:00:00Z",
+      "thread_id": "thread_007",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440114",
+          "email": "updates@taxlawresources.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440115",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440204",
+          "file_name": "2024_Tax_Law_Changes_Summary.pdf",
+          "file_type": "application/pdf",
+          "file_size": "3.1MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440008",
+      "subject": "Re: Year-End Tax Planning for TechStart Inc.",
+      "body": "Hi Sarah,\n\nThanks for the detailed tax planning proposal. I've reviewed it with our board and we have a few questions:\n\n1. Can you clarify the R&D tax credit calculations?\n2. What's the timeline for implementing the cost segregation study?\n3. Are there any additional state-specific considerations we should be aware of?\n\nAlso, I've attached our updated financial projections for Q1 2024.\n\nLet's schedule a call next week to discuss these items.\n\nBest regards,\nJennifer Park\nCFO, TechStart Inc.",
+      "sent_at": "2024-01-15T15:30:00Z",
+      "created_at": "2024-01-15T15:30:00Z",
+      "updated_at": "2024-01-15T15:30:00Z",
+      "thread_id": "thread_008",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440116",
+          "email": "jennifer.park@techstart.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440117",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": false
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440205",
+          "file_name": "TechStart_Q1_2024_Projections.xlsx",
+          "file_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "file_size": "1.8MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440009",
+      "subject": "Your Bank Statement for January 2024",
+      "body": "Dear Valued Customer,\n\nYour monthly bank statement for January 2024 is now available.\n\nAccount: ****1234\nStatement Period: January 1-31, 2024\n\nKey Information:\n- Beginning Balance: $45,230.15\n- Ending Balance: $52,180.75\n- Total Deposits: $12,450.00\n- Total Withdrawals: $5,499.40\n- Service Charges: $0.00\n\nPlease review your statement and contact us immediately if you notice any discrepancies.\n\nFor security reasons, please do not reply to this email. Contact us through our secure online banking portal or call our customer service line.\n\nThank you for choosing First National Bank.\n\nBest regards,\nFirst National Bank\nCustomer Service",
+      "sent_at": "2024-01-15T07:00:00Z",
+      "created_at": "2024-01-15T07:00:00Z",
+      "updated_at": "2024-01-15T07:00:00Z",
+      "thread_id": "thread_009",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440118",
+          "email": "statements@firstnationalbank.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440119",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440206",
+          "file_name": "January_2024_Statement.pdf",
+          "file_type": "application/pdf",
+          "file_size": "2.7MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440010",
+      "subject": "Internal: Client Feedback - Green Energy Solutions",
+      "body": "Team,\n\nI wanted to share some positive feedback we received from Green Energy Solutions regarding Sarah's work on their recent audit.\n\nFrom the client:\n'Sarah was incredibly thorough and professional throughout the entire audit process. Her attention to detail and ability to explain complex accounting issues in simple terms was invaluable. We appreciate her dedication and would highly recommend her services to other companies.'\n\nThis is exactly the kind of client relationship we want to build. Great job, Sarah!\n\nLet's use this as a case study in our next team training session.\n\nBest regards,\nDavid Rodriguez\nPartner",
+      "sent_at": "2024-01-15T17:00:00Z",
+      "created_at": "2024-01-15T17:00:00Z",
+      "updated_at": "2024-01-15T17:00:00Z",
+      "thread_id": "thread_010",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440120",
+          "email": "david.rodriguez@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440121",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": false
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440122",
+          "email": "team@accountingfirm.com",
+          "type": "cc",
+          "is_read": true
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440011",
+      "subject": "Re: Q4 Financial Statements - Smith Manufacturing Co.",
+      "body": "Hi Michael,\n\nThank you for sending over the Q4 financial statements. I've reviewed the documents and have a few questions:\n\n1. For the depreciation schedule - I notice the new equipment was purchased on October 15th, but the depreciation calculation seems to be for the full quarter. Should this be prorated for the 2.5 months?\n\n2. Regarding the expense classification - I see some items in the P&L that might be better categorized. Specifically, the $15,000 for 'consulting services' - can you provide more detail on what this covers?\n\n3. The AR aging report shows $45,000 over 90 days. Have you been in contact with these customers? We should discuss collection strategies.\n\nLet's schedule a call for tomorrow at 2 PM to go through these items. Does that work for you?\n\nBest regards,\nSarah Johnson\nSenior Accountant\nJohnson & Associates CPA",
+      "sent_at": "2024-01-16T10:15:00Z",
+      "created_at": "2024-01-16T10:15:00Z",
+      "updated_at": "2024-01-16T10:15:00Z",
+      "thread_id": "thread_001",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440123",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440124",
+          "email": "michael.chen@smithmanufacturing.com",
+          "type": "to",
+          "is_read": false
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440012",
+      "subject": "Re: Internal: Team Meeting - Tax Season Preparation",
+      "body": "Hi David,\n\nThanks for the reminder. I have a few items to add to the agenda:\n\n1. We need to discuss the new client onboarding process - we've had some delays recently\n2. The new tax software training schedule for the junior staff\n3. Review of our client communication templates\n\nAlso, I'll bring the updated workload distribution spreadsheet to the meeting.\n\nSee you tomorrow!\n\nSarah",
+      "sent_at": "2024-01-15T16:30:00Z",
+      "created_at": "2024-01-15T16:30:00Z",
+      "updated_at": "2024-01-15T16:30:00Z",
+      "thread_id": "thread_002",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440125",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440126",
+          "email": "david.rodriguez@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440127",
+          "email": "team@accountingfirm.com",
+          "type": "cc",
+          "is_read": true
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440013",
+      "subject": "Re: URGENT: Missing Documentation for Johnson Corp Audit",
+      "body": "Lisa,\n\nI've gathered most of the missing documentation. Here's what I have:\n\n- Bank reconciliation for December 2023 (attached)\n- Fixed asset register (attached)\n- Inventory count sheets (attached)\n\nHowever, I'm still waiting for the related party transaction details from the client. They promised to send it by end of day today.\n\nI'll forward it to you as soon as I receive it.\n\nSarah",
+      "sent_at": "2024-01-16T09:00:00Z",
+      "created_at": "2024-01-16T09:00:00Z",
+      "updated_at": "2024-01-16T09:00:00Z",
+      "thread_id": "thread_003",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440128",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440129",
+          "email": "lisa.thompson@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440207",
+          "file_name": "Johnson_Corp_Bank_Reconciliation_Dec2023.pdf",
+          "file_type": "application/pdf",
+          "file_size": "1.5MB"
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440208",
+          "file_name": "Johnson_Corp_Fixed_Asset_Register.xlsx",
+          "file_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "file_size": "2.1MB"
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440209",
+          "file_name": "Johnson_Corp_Inventory_Count_Sheets.pdf",
+          "file_type": "application/pdf",
+          "file_size": "3.2MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440014",
+      "subject": "New Client Inquiry - Restaurant Chain",
+      "body": "Dear Sarah,\n\nI hope this email finds you well. I was referred to you by our mutual colleague, Jennifer Park at TechStart Inc.\n\nI'm the CFO of FreshBites Restaurant Chain, and we're looking for a new accounting firm to handle our financial statements, tax preparation, and ongoing advisory services. We have 12 locations across the state and annual revenue of approximately $8 million.\n\nWe're particularly interested in:\n- Monthly financial statement preparation\n- Quarterly tax planning\n- Year-end tax preparation\n- Advisory services for growth planning\n\nWould you be available for an initial consultation next week? I can meet any day except Wednesday.\n\nThank you for your time.\n\nBest regards,\nRobert Martinez\nCFO, FreshBites Restaurant Chain\nrobert.martinez@freshbites.com",
+      "sent_at": "2024-01-16T11:45:00Z",
+      "created_at": "2024-01-16T11:45:00Z",
+      "updated_at": "2024-01-16T11:45:00Z",
+      "thread_id": "thread_011",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440130",
+          "email": "robert.martinez@freshbites.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440131",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": false
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440015",
+      "subject": "Re: Year-End Tax Planning for TechStart Inc.",
+      "body": "Hi Jennifer,\n\nThank you for the questions and the updated financial projections. I've reviewed everything and here are my responses:\n\n1. R&D Tax Credit Calculations: The credit is calculated at 20% of qualified research expenses over the base amount. Based on your projections, you could potentially qualify for approximately $85,000 in credits for 2024.\n\n2. Cost Segregation Study Timeline: We can complete this within 4-6 weeks. The optimal time would be before your next major equipment purchase.\n\n3. State Considerations: Yes, there are several state-specific credits available, particularly for technology companies in your state. I've attached a detailed analysis.\n\nI'm available for a call next Tuesday or Thursday. Which works better for you?\n\nBest regards,\nSarah",
+      "sent_at": "2024-01-17T14:20:00Z",
+      "created_at": "2024-01-17T14:20:00Z",
+      "updated_at": "2024-01-17T14:20:00Z",
+      "thread_id": "thread_008",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440132",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440133",
+          "email": "jennifer.park@techstart.com",
+          "type": "to",
+          "is_read": false
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440210",
+          "file_name": "TechStart_State_Tax_Analysis_2024.pdf",
+          "file_type": "application/pdf",
+          "file_size": "2.8MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440016",
+      "subject": "CPA Continuing Education Webinar - Advanced Tax Strategies",
+      "body": "Dear Accounting Professional,\n\nJoin us for our upcoming webinar on Advanced Tax Strategies for High-Net-Worth Individuals and Business Owners.\n\nDate: February 8, 2024\nTime: 2:00 PM - 4:00 PM EST\nCPE Credits: 2 hours\n\nTopics Covered:\n- Estate planning strategies\n- Business succession planning\n- International tax considerations\n- Alternative minimum tax planning\n- Charitable giving strategies\n\nFeatured Speakers:\n- John Smith, Esq., Tax Attorney\n- Dr. Mary Johnson, CPA, Tax Specialist\n\nRegistration Fee: $99\nEarly Bird Discount (until Jan 31): $79\n\nRegister now to secure your spot!\n\nBest regards,\nProfessional Development Team\nNational Association of CPAs",
+      "sent_at": "2024-01-16T13:30:00Z",
+      "created_at": "2024-01-16T13:30:00Z",
+      "updated_at": "2024-01-16T13:30:00Z",
+      "thread_id": "thread_012",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440134",
+          "email": "events@nacpa.org",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440135",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440211",
+          "file_name": "Advanced_Tax_Strategies_Webinar_Brochure.pdf",
+          "file_type": "application/pdf",
+          "file_size": "1.9MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440017",
+      "subject": "Internal: Client Portal Update - New Features Available",
+      "body": "Team,\n\nI wanted to let you know that we've rolled out several new features to our client portal:\n\nNew Features:\n- Real-time document sharing and collaboration\n- Automated expense categorization\n- Mobile app for receipt uploads\n- Enhanced reporting dashboard\n- Secure messaging system\n\nPlease review the attached user guide and let me know if you have any questions.\n\nWe'll be doing a demo during tomorrow's team meeting.\n\nThanks,\nIT Team",
+      "sent_at": "2024-01-16T15:45:00Z",
+      "created_at": "2024-01-16T15:45:00Z",
+      "updated_at": "2024-01-16T15:45:00Z",
+      "thread_id": "thread_013",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440136",
+          "email": "it@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440137",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": false
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440138",
+          "email": "team@accountingfirm.com",
+          "type": "cc",
+          "is_read": true
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440212",
+          "file_name": "Client_Portal_User_Guide_v2.1.pdf",
+          "file_type": "application/pdf",
+          "file_size": "4.2MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440018",
+      "subject": "Your Credit Card Statement - January 2024",
+      "body": "Dear Valued Customer,\n\nYour credit card statement for January 2024 is now available.\n\nCard: ****5678\nStatement Period: January 1-31, 2024\n\nSummary:\n- Previous Balance: $2,450.75\n- Payments: $2,450.75\n- Purchases: $1,890.25\n- Cash Advances: $0.00\n- Fees: $0.00\n- New Balance: $1,890.25\n- Minimum Payment: $25.00\n- Due Date: February 15, 2024\n\nPlease review your statement and contact us immediately if you notice any unauthorized charges.\n\nThank you for choosing Capital One.\n\nBest regards,\nCapital One Customer Service",
+      "sent_at": "2024-01-16T08:00:00Z",
+      "created_at": "2024-01-16T08:00:00Z",
+      "updated_at": "2024-01-16T08:00:00Z",
+      "thread_id": "thread_014",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440139",
+          "email": "statements@capitalone.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440140",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        }
+      ],
+      "attachments": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440213",
+          "file_name": "Capital_One_Statement_January_2024.pdf",
+          "file_type": "application/pdf",
+          "file_size": "1.6MB"
+        }
+      ]
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440019",
+      "subject": "Re: Internal: Client Feedback - Green Energy Solutions",
+      "body": "David,\n\nThank you for sharing that feedback! I'm really glad the client was satisfied with our work.\n\nI think we could use this as a case study to highlight our approach to:\n- Client communication and transparency\n- Technical expertise in renewable energy accounting\n- Attention to detail in audit procedures\n\nI'd be happy to present this during the team training session.\n\nThanks again for the recognition.\n\nSarah",
+      "sent_at": "2024-01-16T17:30:00Z",
+      "created_at": "2024-01-16T17:30:00Z",
+      "updated_at": "2024-01-16T17:30:00Z",
+      "thread_id": "thread_010",
+      "status": "read",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440141",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440142",
+          "email": "david.rodriguez@accountingfirm.com",
+          "type": "to",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440143",
+          "email": "team@accountingfirm.com",
+          "type": "cc",
+          "is_read": true
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440020",
+      "subject": "URGENT: System Maintenance - Client Portal Down",
+      "body": "Dear Valued Clients,\n\nWe will be performing scheduled maintenance on our client portal on Sunday, January 21st, from 2:00 AM to 6:00 AM EST.\n\nDuring this time:\n- The client portal will be temporarily unavailable\n- Document uploads will be paused\n- Secure messaging will be offline\n\nWe apologize for any inconvenience this may cause. All services will resume normal operation by 6:00 AM EST.\n\nIf you have urgent matters during this time, please contact your accountant directly by phone.\n\nThank you for your understanding.\n\nBest regards,\nJohnson & Associates CPA\nIT Support Team",
+      "sent_at": "2024-01-17T10:00:00Z",
+      "created_at": "2024-01-17T10:00:00Z",
+      "updated_at": "2024-01-17T10:00:00Z",
+      "thread_id": "thread_015",
+      "status": "unread",
+      "participants": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440144",
+          "email": "support@accountingfirm.com",
+          "type": "from",
+          "is_read": true
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440145",
+          "email": "sarah.johnson@accountingfirm.com",
+          "type": "to",
+          "is_read": false
+        },
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440146",
+          "email": "clients@accountingfirm.com",
+          "type": "bcc",
+          "is_read": false
+        }
+      ],
+      "attachments": []
+    }
+  ]
+} 
