@@ -6,7 +6,8 @@ Run under the Cursor/VS Code debugger (see .vscode/launch.json), or:
   .venv/bin/python scripts/debug_one_email.py 0
   .venv/bin/python scripts/debug_one_email.py 550e8400-e29b-41d4-a716-446655440001
 
-Set breakpoints in classifier/methods/llm/__init__.py (_invoke_once) or
+Set breakpoints in classifier/methods/llm/__init__.py (_invoke_once),
+classifier/methods/llm/systemone.py (classify_via_systemone), or
 classifier/methods/llm/agent.py (extract_structured_result).
 """
 
@@ -24,7 +25,6 @@ if str(ROOT) not in sys.path:
 from classifier.executor import load_emails
 from classifier.log import log
 from classifier.methods.llm import LlmClassifier
-from classifier.methods.llm.agent import extract_structured_result, invoke_agent
 from classifier.methods.llm.config import read_settings
 
 
@@ -38,23 +38,14 @@ def _pick_email(emails: list, selector: str):
     raise SystemExit(f"email not found: {selector!r}")
 
 
-def main() -> None:
-    selector = sys.argv[1] if len(sys.argv) > 1 else "0"
-    # Fail fast while debugging — no silent rules fallback.
-    os.environ.setdefault("LLM_FALLBACK", "0")
-    os.environ.setdefault("LLM_STRICT", "1")
+def _debug_chat(classifier: LlmClassifier, email: dict) -> dict:
+    """Chat-mode path: invoke LangChain agent and log intermediate state."""
+    from classifier.methods.llm.agent import extract_structured_result, invoke_agent
 
-    emails = load_emails(ROOT / "data" / "sample_accountant_emails.json")
-    email = _pick_email(emails, selector)
-    settings = read_settings()
-    log(f"[debug] model={settings.model} id={email.get('id')} subject={email.get('subject')}")
-
-    classifier = LlmClassifier(settings)
     if classifier._agent is None:
-        raise SystemExit(f"agent unavailable: {classifier._agent_error}")
+        raise SystemExit(f"agent unavailable: {classifier._setup_error}")
 
-    # Same path as production classify(), but leave `state` in locals for the debugger.
-    log("[debug] invoking agent (set breakpoint on the next line) …")
+    log("[debug] invoking chat agent…")
     state = invoke_agent(classifier._agent, email)
 
     log(f"[debug] state keys: {list(state.keys()) if isinstance(state, dict) else type(state)}")
@@ -76,8 +67,46 @@ def main() -> None:
     if result is None:
         log("[debug] extract_structured_result returned None — inspect `state` in the debugger")
         raise SystemExit(1)
+    return result.model_dump()
 
-    print(json.dumps(result.model_dump(), indent=2))
+
+def _debug_systemone(classifier: LlmClassifier, email: dict) -> dict:
+    """Systemone / Tev1 path: one HTTP decision call (no LangChain agent)."""
+    from classifier.methods.llm.systemone import (
+        classify_via_systemone,
+        systemone_url,
+    )
+
+    url = systemone_url(classifier._settings.base_url)
+    log(f"[debug] systemone POST {url} model={classifier._settings.model}")
+    result = classify_via_systemone(email, classifier._settings)
+    return result.to_dict()
+
+
+def main() -> None:
+    selector = sys.argv[1] if len(sys.argv) > 1 else "0"
+    # Fail fast while debugging — no silent rules fallback.
+    os.environ.setdefault("LLM_FALLBACK", "0")
+    os.environ.setdefault("LLM_STRICT", "1")
+
+    emails = load_emails(ROOT / "data" / "sample_accountant_emails.json")
+    email = _pick_email(emails, selector)
+    settings = read_settings()
+    log(
+        f"[debug] mode={settings.api_mode} model={settings.model} "
+        f"id={email.get('id')} subject={email.get('subject')}"
+    )
+
+    classifier = LlmClassifier(settings)
+    if not classifier._ready:
+        raise SystemExit(f"llm unavailable: {classifier._setup_error}")
+
+    if settings.api_mode == "systemone":
+        payload = _debug_systemone(classifier, email)
+    else:
+        payload = _debug_chat(classifier, email)
+
+    print(json.dumps(payload, indent=2))
 
 
 if __name__ == "__main__":
