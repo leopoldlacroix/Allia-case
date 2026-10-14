@@ -21,9 +21,20 @@ def _email() -> Email:
         "subject": "Q4 Financial Statements",
         "body": "Please review depreciation.",
         "participants": [
-            {"email": "michael.chen@smithmanufacturing.com", "type": "from"}
+            {"email": "michael.chen@smithmanufacturing.com", "type": "from"},
+            {"email": "sarah.johnson@accountingfirm.com", "type": "to"},
+            {"email": "team@accountingfirm.com", "type": "cc"},
         ],
-        "attachments": [],
+        "attachments": [
+            {
+                "file_name": "Q4.pdf",
+                "file_type": "application/pdf",
+                "file_size": "1MB",
+            }
+        ],
+        "sent_at": "2024-01-15T09:30:00Z",
+        "thread_id": "thread_001",
+        "status": "unread",
     }
 
 
@@ -99,7 +110,15 @@ class SystemoneUnitTests(unittest.TestCase):
         self.assertEqual(body["model"], "tev1")
         self.assertIn("source", body["questions"])
         self.assertIn("topic", body["questions"])
-        self.assertEqual(body["state"]["from"], "michael.chen@smithmanufacturing.com")
+        state = body["state"]
+        self.assertEqual(
+            state["from"],
+            ["michael.chen@smithmanufacturing.com"],
+        )
+        self.assertEqual(state["to"], ["sarah.johnson@accountingfirm.com"])
+        self.assertEqual(state["cc"], ["team@accountingfirm.com"])
+        self.assertEqual(state["attachments"][0]["file_name"], "Q4.pdf")
+        self.assertEqual(state["sent_at"], "2024-01-15T09:30:00Z")
 
 
 if __name__ == "__main__":

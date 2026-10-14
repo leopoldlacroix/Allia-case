@@ -73,31 +73,13 @@ def invoke_agent(agent: Any, email: Email) -> Any:
 
 
 def email_user_message(email: Email) -> str:
-    """Compact payload for the model (from, subject, body, attachment names)."""
-    from_address = ""
-    for participant in email.get("participants", []):
-        if participant.get("type", "").lower() == "from":
-            from_address = participant.get("email", "")
-            break
-    attachments = [
-        name
-        for name in (
-            attachment.get("file_name", "")
-            for attachment in email.get("attachments", [])
-        )
-        if name
-    ]
-    payload = {
-        "id": email.get("id"),
-        "from": from_address,
-        "subject": email.get("subject", ""),
-        "body": email.get("body", ""),
-        "attachment_names": attachments,
-    }
+    """Compact payload for the model (participants, body, attachments, metadata)."""
+    from classifier.methods.llm.payload import email_payload
+
     return (
         "Classify this email. Submit ClassificationResult with source, topic, "
         "and a short reason.\n\n"
-        + json.dumps(payload, ensure_ascii=False, indent=2)
+        + json.dumps(email_payload(email), ensure_ascii=False, indent=2)
     )
 
 

@@ -103,7 +103,10 @@ class CompareTests(unittest.TestCase):
         self.assertEqual(score["source"], 1)
 
         html_doc = render_compare(emails, runs, labels, "emails.json")
-        self.assertIn("label check?", html_doc)
+        self.assertIn("check provisional?", html_doc)
+        self.assertIn("provisional labels (generated)", html_doc)
+        self.assertIn("<th>Source</th>", html_doc)
+        self.assertIn("<th>Topic</th>", html_doc)
         self.assertIn("Body text for inspection.", html_doc)
         self.assertIn("Both", html_doc)
 
@@ -143,7 +146,8 @@ class CompareTests(unittest.TestCase):
                 outputs_dir=out_dir,
             )
             text = html_path.read_text(encoding="utf-8")
-            self.assertIn("label check?", text)
+            self.assertIn("check provisional?", text)
+            self.assertIn("provisional labels (generated)", text)
 
 
 if __name__ == "__main__":

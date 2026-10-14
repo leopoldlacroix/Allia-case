@@ -15,7 +15,8 @@ def system_prompt() -> str:
     domain = firm_domain()
     return f"""You classify one email for an accounting firm's inbox.
 
-The user message contains the email (from, subject, body, attachment names).
+The user message contains the email (from, to, cc, bcc, subject, body,
+attachments, and timestamps when available).
 Judge from that text alone. Then call the ClassificationResult tool with:
 - source: client | internal | external
 - topic: accounting | taxes | payroll | legal | other

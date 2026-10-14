@@ -25,26 +25,9 @@ def systemone_url(base_url: str) -> str:
 
 def email_state(email: Email) -> dict[str, Any]:
     """Structured text for the decision model (same fields as the chat user message)."""
-    from_address = ""
-    for participant in email.get("participants", []):
-        if participant.get("type", "").lower() == "from":
-            from_address = participant.get("email", "")
-            break
-    attachments = [
-        name
-        for name in (
-            attachment.get("file_name", "")
-            for attachment in email.get("attachments", [])
-        )
-        if name
-    ]
-    return {
-        "id": email.get("id"),
-        "from": from_address,
-        "subject": email.get("subject", ""),
-        "body": email.get("body", ""),
-        "attachment_names": attachments,
-    }
+    from classifier.methods.llm.payload import email_payload
+
+    return email_payload(email)
 
 
 def classification_questions() -> dict[str, Any]:
