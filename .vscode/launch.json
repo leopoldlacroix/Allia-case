@@ -1,0 +1,46 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug LLM: one email",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/debug_one_email.py",
+      "args": ["0"],
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Debug LLM: one email (step into libs)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/debug_one_email.py",
+      "args": ["0"],
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Debug classifier: llm full sample",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "classifier",
+      "args": [
+        "--method",
+        "llm",
+        "--no-fallback",
+        "data/sample_accountant_emails.json"
+      ],
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

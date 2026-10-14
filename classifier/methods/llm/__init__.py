@@ -95,7 +95,20 @@ class LlmClassifier:
         )
         structured = extract_structured_result(state)
         if structured is None:
-            raise LlmInvokeError("agent returned no structured ClassificationResult")
+            keys = list(state.keys()) if isinstance(state, dict) else type(state)
+            preview = ""
+            if isinstance(state, dict):
+                preview = f" structured_response={state.get('structured_response')!r}"[:300]
+                messages = state.get("messages") or []
+                if messages:
+                    last = messages[-1]
+                    preview += (
+                        f" last_message={type(last).__name__}"
+                        f" content={getattr(last, 'content', None)!r}"[:200]
+                    )
+            raise LlmInvokeError(
+                f"agent returned no structured ClassificationResult (keys={keys}){preview}"
+            )
         reason = (structured.reason or "").strip() or (
             f"llm labels source={structured.source}, topic={structured.topic}"
         )

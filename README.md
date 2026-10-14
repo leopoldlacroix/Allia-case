@@ -83,6 +83,15 @@ python3 -m unittest discover -s tests
 
 Progress lines go to stderr (`[classifier] 3/20 …`, `[llm] invoke …`). JSON results stay on stdout. Free models can take many seconds per email — that is normal, not a freeze.
 
+## Debug in Cursor / VS Code
+
+1. Open the Run and Debug view (sidebar play icon, or `Ctrl+Shift+D` / `Cmd+Shift+D`).
+2. Choose **Debug LLM: one email** (uses [scripts/debug_one_email.py](scripts/debug_one_email.py) on the first sample email).
+3. Set breakpoints in [`classifier/methods/llm/__init__.py`](classifier/methods/llm/__init__.py) (`_invoke_once`) or [`classifier/methods/llm/agent.py`](classifier/methods/llm/agent.py) (`extract_structured_result`).
+4. Press F5. Inspect `state`, `structured_response`, and `messages` in the Variables panel.
+
+Change the launch `args` (or run `python scripts/debug_one_email.py <index-or-id>`) to pick another email. That script sets `LLM_FALLBACK=0` so failures surface instead of silently using rules.
+
 ## Review in the browser
 
 ```bash

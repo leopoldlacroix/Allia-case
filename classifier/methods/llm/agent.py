@@ -68,15 +68,49 @@ def email_user_message(email: Email) -> str:
 
 
 def extract_structured_result(state: Any) -> ClassificationResult | None:
-    """Pull ClassificationResult from create_agent's final state."""
+    """Pull ClassificationResult from create_agent's final state.
+
+    Also recovers from common free-model shapes: dict payload, or a final
+    AIMessage tool_call whose args match ClassificationResult.
+    """
     if not isinstance(state, dict):
         return None
+
     structured = state.get("structured_response")
-    if isinstance(structured, ClassificationResult):
-        return structured
-    if isinstance(structured, dict):
+    parsed = _coerce_result(structured)
+    if parsed is not None:
+        return parsed
+
+    # Fallback: scan messages for a ClassificationResult-shaped tool call.
+    messages = state.get("messages") or []
+    for message in reversed(list(messages)):
+        for call in getattr(message, "tool_calls", None) or []:
+            name = call.get("name") if isinstance(call, dict) else getattr(call, "name", "")
+            if not name:
+                continue
+            if "ClassificationResult" not in str(name) and name != "ClassificationResult":
+                continue
+            args = call.get("args") if isinstance(call, dict) else getattr(call, "args", None)
+            parsed = _coerce_result(args)
+            if parsed is not None:
+                return parsed
+    return None
+
+
+def _coerce_result(value: Any) -> ClassificationResult | None:
+    if isinstance(value, ClassificationResult):
+        return value
+    if isinstance(value, dict):
         try:
-            return ClassificationResult.model_validate(structured)
+            return ClassificationResult.model_validate(value)
         except Exception:
             return None
+    if isinstance(value, str) and value.strip():
+        try:
+            return ClassificationResult.model_validate_json(value)
+        except Exception:
+            try:
+                return ClassificationResult.model_validate(json.loads(value))
+            except Exception:
+                return None
     return None
