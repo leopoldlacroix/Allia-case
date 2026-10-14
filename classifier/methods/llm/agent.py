@@ -11,8 +11,8 @@ from classifier.methods.llm.prompts import system_prompt
 from classifier.methods.llm.schemas import ClassificationResult
 from classifier.types import Email
 
-# Model → ClassificationResult only; keep a small headroom for retries inside the graph.
-DEFAULT_RECURSION_LIMIT = 6
+# Single model pass → ClassificationResult (no helper-tool loop).
+DEFAULT_RECURSION_LIMIT = 1
 
 
 def build_chat_model(settings: LlmSettings) -> Any:
@@ -49,7 +49,7 @@ def recursion_limit() -> int:
     if not raw:
         return DEFAULT_RECURSION_LIMIT
     try:
-        return max(2, int(raw))
+        return max(1, int(raw))
     except ValueError:
         return DEFAULT_RECURSION_LIMIT
 
