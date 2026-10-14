@@ -24,7 +24,7 @@ if str(ROOT) not in sys.path:
 from classifier.executor import load_emails
 from classifier.log import log
 from classifier.methods.llm import LlmClassifier
-from classifier.methods.llm.agent import email_user_message, extract_structured_result
+from classifier.methods.llm.agent import extract_structured_result, invoke_agent
 from classifier.methods.llm.config import read_settings
 
 
@@ -54,9 +54,8 @@ def main() -> None:
         raise SystemExit(f"agent unavailable: {classifier._agent_error}")
 
     # Same path as production classify(), but leave `state` in locals for the debugger.
-    message = email_user_message(email)
     log("[debug] invoking agent (set breakpoint on the next line) …")
-    state = classifier._agent.invoke({"messages": [{"role": "user", "content": message}]})
+    state = invoke_agent(classifier._agent, email)
 
     log(f"[debug] state keys: {list(state.keys()) if isinstance(state, dict) else type(state)}")
     structured = state.get("structured_response") if isinstance(state, dict) else None

@@ -1,4 +1,9 @@
-"""Helper tools that ground the LLM with deterministic signals."""
+"""Helper tools that ground the LLM with deterministic signals.
+
+Important: free models often invent bad tool args (e.g. from_email=': ').
+Per LangChain docs, tools read the current email from ToolRuntime.context so
+those fields are NOT in the schema the model fills in.
+"""
 
 from __future__ import annotations
 
@@ -6,6 +11,7 @@ import json
 import os
 from typing import Any
 
+from classifier.methods.llm.context import EmailContext
 from classifier.methods.rules.source import (
     BULK_LOCAL_PARTS,
     FIRM_DOMAIN as DEFAULT_FIRM_DOMAIN,
@@ -24,7 +30,10 @@ def _firm_domain() -> str:
     return os.getenv("FIRM_DOMAIN", DEFAULT_FIRM_DOMAIN).strip() or DEFAULT_FIRM_DOMAIN
 
 
-def get_sender_info(from_email: str) -> str:
+# --- Pure helpers (unit-tested; no LangChain dependency) ---
+
+
+def sender_info_payload(from_email: str) -> str:
     """Parse the From address into local-part, domain, and whether it is the firm."""
     address = from_email.strip().lower()
     local_part, _, domain = address.rpartition("@")
@@ -40,7 +49,7 @@ def get_sender_info(from_email: str) -> str:
     return json.dumps(payload)
 
 
-def check_bulk_or_spam_signals(from_email: str, subject: str, body: str) -> str:
+def bulk_or_spam_payload(from_email: str, subject: str, body: str) -> str:
     """Check bulk local-parts and tight spam phrases (marketing/lottery style)."""
     address = from_email.strip().lower()
     local_part, _, _domain = address.rpartition("@")
@@ -55,7 +64,7 @@ def check_bulk_or_spam_signals(from_email: str, subject: str, body: str) -> str:
     return json.dumps(payload)
 
 
-def score_topic_keywords(subject: str, body: str, attachment_names: str = "") -> str:
+def topic_keyword_payload(subject: str, body: str, attachment_names: str = "") -> str:
     """Score topic keywords (subject weight 2, body/attachments weight 1). Threshold is 2."""
     message = f"{body}\n{attachment_names}"
     scores: dict[str, int] = {}
@@ -80,12 +89,47 @@ def score_topic_keywords(subject: str, body: str, attachment_names: str = "") ->
     return json.dumps(payload)
 
 
-def build_helper_tools() -> list[Any]:
-    """Wrap helpers as LangChain tools (imported lazily so rules stay dependency-free)."""
-    from langchain.tools import tool
+# Backwards-compatible aliases used by existing unit tests.
+get_sender_info = sender_info_payload
+check_bulk_or_spam_signals = bulk_or_spam_payload
+score_topic_keywords = topic_keyword_payload
 
-    return [
-        tool(get_sender_info),
-        tool(check_bulk_or_spam_signals),
-        tool(score_topic_keywords),
-    ]
+
+def build_helper_tools() -> list[Any]:
+    """LangChain tools: no model-visible args; email comes from runtime.context."""
+    # Import into this module's globals so @tool can resolve annotations under
+    # `from __future__ import annotations` (nested defs share module __globals__).
+    from langchain.tools import ToolRuntime, tool
+
+    globals()["ToolRuntime"] = ToolRuntime
+
+    @tool
+    def get_sender_info(runtime: ToolRuntime[EmailContext]) -> str:  # noqa: F811
+        """Inspect the From address of the email currently being classified.
+
+        No arguments needed — the current email is injected by the runtime.
+        Returns local-part, domain, and whether it is the firm domain.
+        """
+        return sender_info_payload(runtime.context.from_email)
+
+    @tool
+    def check_bulk_or_spam_signals(  # noqa: F811
+        runtime: ToolRuntime[EmailContext],
+    ) -> str:
+        """Check whether the current email looks like bulk mail or spam.
+
+        No arguments needed — uses the current email from runtime context.
+        """
+        ctx = runtime.context
+        return bulk_or_spam_payload(ctx.from_email, ctx.subject, ctx.body)
+
+    @tool
+    def score_topic_keywords(runtime: ToolRuntime[EmailContext]) -> str:  # noqa: F811
+        """Score accounting/tax/payroll/legal keywords on the current email.
+
+        No arguments needed — uses subject, body, and attachment names from context.
+        """
+        ctx = runtime.context
+        return topic_keyword_payload(ctx.subject, ctx.body, ctx.attachment_names)
+
+    return [get_sender_info, check_bulk_or_spam_signals, score_topic_keywords]

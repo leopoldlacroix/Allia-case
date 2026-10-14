@@ -87,12 +87,12 @@ class LlmClassifier:
         return self._handle_failure(email, last_error or "unknown error")
 
     def _invoke_once(self, email: Email) -> Classification:
-        from classifier.methods.llm.agent import email_user_message, extract_structured_result
+        from classifier.methods.llm.agent import extract_structured_result, invoke_agent
 
         assert self._agent is not None
-        state = self._agent.invoke(
-            {"messages": [{"role": "user", "content": email_user_message(email)}]}
-        )
+        # Context injects from/subject/body into tools (ToolRuntime) so the model
+        # does not have to pass those args — free models often pass garbage like ": ".
+        state = invoke_agent(self._agent, email)
         structured = extract_structured_result(state)
         if structured is None:
             keys = list(state.keys()) if isinstance(state, dict) else type(state)
