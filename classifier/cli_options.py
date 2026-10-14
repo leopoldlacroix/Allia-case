@@ -41,18 +41,18 @@ def add_run_artifact_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--tag",
         default=None,
-        help="Optional label stored in data/outputs/ filename and metadata.",
+        help="Optional label stored in runs/results/ filename and metadata.",
     )
     parser.add_argument(
         "--no-save",
         action="store_true",
-        help="Do not write a run artifact under data/outputs/.",
+        help="Do not write a run artifact under runs/results/.",
     )
     parser.add_argument(
         "--outputs-dir",
         type=Path,
-        default=Path("data/outputs"),
-        help="Directory for run JSON files (default: data/outputs).",
+        default=Path("runs/results"),
+        help="Directory for run JSON files (default: runs/results).",
     )
 
 

@@ -10,9 +10,8 @@ data/review.html
 data/review_*.html
 data/compare.html
 data/outputs/
+runs/results/*
+!runs/results/.gitkeep
+runs/reviews/
+runs/compare.html
 .env
-.env.tev
-.env.chat*
-!.env.example
-!.env.tev.example
-!.env.chat.example

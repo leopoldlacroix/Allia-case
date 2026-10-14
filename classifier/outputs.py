@@ -1,4 +1,4 @@
-"""Persist classification runs under data/outputs/ for later comparison."""
+"""Persist classification runs under runs/results/ for later comparison."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from typing import Any
 
 from classifier.types import Classification
 
-DEFAULT_OUTPUTS_DIR = Path("data/outputs")
+DEFAULT_OUTPUTS_DIR = Path("runs/results")
 
 
 @dataclass(frozen=True)

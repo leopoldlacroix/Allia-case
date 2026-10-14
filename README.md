@@ -17,16 +17,19 @@ classifier/
   registry.py              # method name → implementation
   executor.py              # load any emails JSON + run a method
   review.py                # static HTML review page for eyeballing results
-  outputs.py               # save run JSON under data/outputs/
+  outputs.py               # save run JSON under runs/results/
   compare.py               # side-by-side dashboard from saved runs
   methods/
     rules/                 # address + keyword rules
     llm/                   # chat or systemone (optional deps)
+runs/
+  envs/                    # one .env profile per model
+  results/                 # saved run JSON (gitignored)
+  reviews/                 # optional per-run HTML (gitignored)
+  compare.html
 data/
   sample_accountant_emails.json
   eval_labels.json
-  outputs/                 # saved runs (gitignored)
-  review.html / compare.html
 tests/
 docs/assignement.md
 ```
@@ -57,20 +60,18 @@ For Tev1 on Ollama: `LLM_API_MODE=systemone`, `LLM_MODEL=tev1`, `LLM_BASE_URL=ht
 
 ### Profiles and CLI overrides
 
-Prefer a profile env file per model instead of editing `.env` between runs. Load order: process env → repo `.env` → `--env-file` → `--model` / `--api-mode` / `--base-url` / `--api-key`.
+Prefer a profile under [`runs/envs/`](runs/envs/) instead of editing `.env` between runs. Load order: process env → repo `.env` → `--env-file` → `--model` / `--api-mode` / `--base-url` / `--api-key`.
 
 ```bash
-# examples (no secrets): .env.tev.example, .env.chat.example
 python3 -m classifier.review data/sample_accountant_emails.json \
-  --method llm --env-file .env.tev --tag tev1 \
-  --labels data/eval_labels.json --out data/review_tev.html
+  --method llm --env-file runs/envs/tev1-0.8b.env --tag tev1-0.8b \
+  --labels data/eval_labels.json --out runs/reviews/tev1-0.8b.html
 
-python3 -m classifier.review data/sample_accountant_emails.json \
-  --method llm --env-file .env.chat-gemma --tag gemma \
-  --labels data/eval_labels.json --out data/review_gemma.html
+# or run rules + every Ollama profile, then compare:
+./scripts/run_ollama_suite.sh
 ```
 
-Each run also writes `data/outputs/<timestamp>_<method>_<model>_<tag>.json` (use `--no-save` to skip).
+Each run writes `runs/results/<timestamp>_<method>_<model>_<tag>.json` (use `--no-save` to skip). See [`runs/README.md`](runs/README.md).
 
 ## Methods
 
@@ -151,7 +152,8 @@ After several runs (rules, chat, tev, …), build a dashboard with overall score
 python3 -m classifier.compare \
   --emails data/sample_accountant_emails.json \
   --labels data/eval_labels.json \
-  --out data/compare.html
+  --outputs-dir runs/results \
+  --out runs/compare.html
 ```
 
-Open `data/compare.html`. Pass `--inputs path1.json path2.json` to compare a subset of `data/outputs/`.
+Open `runs/compare.html`. Pass `--inputs path1.json path2.json` to compare a subset of `runs/results/`.

@@ -1,10 +1,11 @@
-"""Build a static HTML dashboard comparing saved runs under data/outputs/.
+"""Build a static HTML dashboard comparing saved runs under runs/results/.
 
 Usage:
   python3 -m classifier.compare \\
     --emails data/sample_accountant_emails.json \\
     --labels data/eval_labels.json \\
-    --out data/compare.html
+    --outputs-dir runs/results \\
+    --out runs/compare.html
 """
 
 from __future__ import annotations
@@ -349,7 +350,7 @@ def write_compare(
     out_path: str | Path,
     *,
     labels_path: str | Path | None = None,
-    outputs_dir: str | Path = Path("data/outputs"),
+    outputs_dir: str | Path = Path("runs/results"),
     inputs: list[str | Path] | None = None,
 ) -> Path:
     emails = load_emails(emails_path)
@@ -386,8 +387,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--outputs-dir",
         type=Path,
-        default=Path("data/outputs"),
-        help="Directory of run JSON files (default: data/outputs).",
+        default=Path("runs/results"),
+        help="Directory of run JSON files (default: runs/results).",
     )
     parser.add_argument(
         "--inputs",
@@ -399,8 +400,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--out",
         type=Path,
-        default=Path("data/compare.html"),
-        help="Output HTML path (default: data/compare.html).",
+        default=Path("runs/compare.html"),
+        help="Output HTML path (default: runs/compare.html).",
     )
     parser.add_argument(
         "--no-labels",

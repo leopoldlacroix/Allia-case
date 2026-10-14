@@ -184,7 +184,7 @@ def write_review(
     overrides=None,
     tag: str | None = None,
     save: bool = True,
-    outputs_dir: str | Path = Path("data/outputs"),
+    outputs_dir: str | Path = Path("runs/results"),
 ) -> Path:
     emails = load_emails(emails_path)
     results = run(

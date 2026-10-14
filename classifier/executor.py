@@ -71,7 +71,7 @@ def run(
     overrides=None,
     tag: str | None = None,
     save: bool = True,
-    outputs_dir: str | Path = Path("data/outputs"),
+    outputs_dir: str | Path = Path("runs/results"),
 ) -> list[Classification]:
     """Classify every email in emails_path with the chosen method."""
     if allow_fallback is False:
@@ -125,7 +125,7 @@ def run_as_dicts(
     overrides=None,
     tag: str | None = None,
     save: bool = True,
-    outputs_dir: str | Path = Path("data/outputs"),
+    outputs_dir: str | Path = Path("runs/results"),
 ) -> list[dict[str, str]]:
     return [
         result.to_dict()
