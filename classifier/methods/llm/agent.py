@@ -16,19 +16,26 @@ DEFAULT_RECURSION_LIMIT = 1
 
 
 def build_chat_model(settings: LlmSettings) -> Any:
-    from langchain_openrouter import ChatOpenRouter
+    """Any OpenAI-compatible chat API (OpenRouter, OpenAI, vLLM, local gateway, …)."""
+    from langchain_openai import ChatOpenAI
+
+    headers: dict[str, str] = {}
+    # OpenRouter optional ranking headers; ignored by most other providers.
+    if settings.app_url:
+        headers["HTTP-Referer"] = settings.app_url
+    if settings.app_title:
+        headers["X-Title"] = settings.app_title
 
     kwargs: dict[str, Any] = {
         "model": settings.model,
         "api_key": settings.api_key,
+        "base_url": settings.base_url,
         "temperature": 0,
         "max_retries": 1,  # we own the outer retry loop
     }
-    if settings.app_url:
-        kwargs["app_url"] = settings.app_url
-    if settings.app_title:
-        kwargs["app_title"] = settings.app_title
-    return ChatOpenRouter(**kwargs)
+    if headers:
+        kwargs["default_headers"] = headers
+    return ChatOpenAI(**kwargs)
 
 
 def build_agent(settings: LlmSettings) -> Any:

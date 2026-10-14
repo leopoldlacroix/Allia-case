@@ -27,6 +27,7 @@ def _settings(**overrides: object) -> LlmSettings:
     base = dict(
         api_key="test-key",
         model="test/model",
+        base_url="https://openrouter.ai/api/v1",
         app_url=None,
         app_title=None,
         max_retries=2,

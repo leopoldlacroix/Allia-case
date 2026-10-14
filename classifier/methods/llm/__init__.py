@@ -39,6 +39,7 @@ class LlmClassifier:
             require_langchain()
             log(
                 f"[llm] building agent model={self._settings.model} "
+                f"base_url={self._settings.base_url} "
                 f"retries={self._settings.max_retries}"
             )
             from classifier.methods.llm.agent import build_agent

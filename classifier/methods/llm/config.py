@@ -1,4 +1,4 @@
-"""Load and validate OpenRouter settings from the environment."""
+"""Load LLM settings from the environment (OpenAI-compatible providers)."""
 
 from __future__ import annotations
 
@@ -10,6 +10,9 @@ from classifier.methods.llm.errors import LlmConfigError
 
 # Repo root: classifier/methods/llm/config.py → parents[3]
 _REPO_ROOT = Path(__file__).resolve().parents[3]
+
+# Default = OpenRouter's OpenAI-compatible API. Override LLM_BASE_URL for others.
+DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
 
 
 def load_dotenv_files() -> None:
@@ -28,10 +31,20 @@ def env_flag(name: str, default: bool) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _first_env(*names: str) -> str:
+    """Return the first non-empty env value among names (supports legacy aliases)."""
+    for name in names:
+        value = (os.getenv(name) or "").strip()
+        if value:
+            return value
+    return ""
+
+
 @dataclass(frozen=True)
 class LlmSettings:
     api_key: str
     model: str
+    base_url: str
     app_url: str | None
     app_title: str | None
     max_retries: int
@@ -47,11 +60,14 @@ def read_settings() -> LlmSettings:
         max_retries = max(1, int(retries_raw))
     except ValueError:
         max_retries = 3
+    base_url = _first_env("LLM_BASE_URL") or DEFAULT_BASE_URL
     return LlmSettings(
-        api_key=(os.getenv("OPENROUTER_API_KEY") or "").strip(),
-        model=(os.getenv("OPENROUTER_MODEL") or "").strip(),
-        app_url=(os.getenv("OPENROUTER_APP_URL") or "").strip() or None,
-        app_title=(os.getenv("OPENROUTER_APP_TITLE") or "").strip() or None,
+        # Prefer generic LLM_* ; keep OPENROUTER_* as aliases for existing .env files.
+        api_key=_first_env("LLM_API_KEY", "OPENROUTER_API_KEY"),
+        model=_first_env("LLM_MODEL", "OPENROUTER_MODEL"),
+        base_url=base_url.rstrip("/"),
+        app_url=_first_env("LLM_APP_URL", "OPENROUTER_APP_URL") or None,
+        app_title=_first_env("LLM_APP_TITLE", "OPENROUTER_APP_TITLE") or None,
         max_retries=max_retries,
         allow_fallback=env_flag("LLM_FALLBACK", True),
         strict=env_flag("LLM_STRICT", False),
@@ -63,9 +79,9 @@ def require_settings(settings: LlmSettings | None = None) -> LlmSettings:
     settings = settings or read_settings()
     missing: list[str] = []
     if not settings.api_key:
-        missing.append("OPENROUTER_API_KEY")
+        missing.append("LLM_API_KEY (or OPENROUTER_API_KEY)")
     if not settings.model:
-        missing.append("OPENROUTER_MODEL")
+        missing.append("LLM_MODEL (or OPENROUTER_MODEL)")
     if missing:
         raise LlmConfigError(
             "missing " + ", ".join(missing) + " (set them in .env; see .env.example)"
@@ -92,11 +108,11 @@ def _silence_python314_langchain_noise() -> None:
 
 
 def require_langchain() -> None:
-    """Raise LlmConfigError if LangChain / OpenRouter packages are not installed."""
+    """Raise LlmConfigError if LangChain / OpenAI-compatible chat deps are missing."""
     _silence_python314_langchain_noise()
     try:
         import langchain  # noqa: F401
-        import langchain_openrouter  # noqa: F401
+        import langchain_openai  # noqa: F401
     except ImportError as exc:
         raise LlmConfigError(
             "LangChain packages missing; run: pip install -r requirements.txt "

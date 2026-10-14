@@ -36,7 +36,9 @@ emails JSON  →  executor  →  Classifier.classify(email)  →  Classification
                     registry: "rules" | "llm"
 ```
 
-`--method llm` sends the email (from, subject, body, attachment names) to an OpenRouter model via LangChain `create_agent`, and collects labels through a `ToolStrategy` `ClassificationResult` (`source`, `topic`, `reason`). No helper tools — the payload is small enough for the model to judge directly. Steps are capped with `LLM_RECURSION_LIMIT` (default 1). Provider is env-driven today (OpenRouter); an OpenAI-compatible base URL can be swapped in later the same way.
+`--method llm` sends the email (from, subject, body, attachment names) to any **OpenAI-compatible** chat API via LangChain `ChatOpenAI` + `create_agent`, and collects labels through a `ToolStrategy` `ClassificationResult` (`source`, `topic`, `reason`). No helper tools. Steps are capped with `LLM_RECURSION_LIMIT` (default 1).
+
+Configure with `LLM_API_KEY`, `LLM_MODEL`, and `LLM_BASE_URL` (default `https://openrouter.ai/api/v1`). Legacy `OPENROUTER_*` env names still work. To switch provider later, only change those three values.
 
 ## Methods
 
