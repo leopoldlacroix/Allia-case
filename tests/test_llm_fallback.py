@@ -28,6 +28,7 @@ def _settings(**overrides: object) -> LlmSettings:
         api_key="test-key",
         model="test/model",
         base_url="https://openrouter.ai/api/v1",
+        api_mode="chat",
         app_url=None,
         app_title=None,
         max_retries=2,
@@ -63,8 +64,9 @@ class FallbackTests(unittest.TestCase):
 
     def test_invoke_error_retries_then_falls_back(self) -> None:
         classifier = LlmClassifier(_settings(max_retries=2))
-        classifier._agent = object()  # pretend agent is ready
-        classifier._agent_error = None
+        classifier._ready = True
+        classifier._agent = object()  # pretend chat agent is ready
+        classifier._setup_error = None
 
         with patch.object(
             classifier,
@@ -79,8 +81,9 @@ class FallbackTests(unittest.TestCase):
 
     def test_non_retryable_falls_back_without_looping_forever(self) -> None:
         classifier = LlmClassifier(_settings(max_retries=5))
+        classifier._ready = True
         classifier._agent = object()
-        classifier._agent_error = None
+        classifier._setup_error = None
 
         with patch.object(
             classifier,

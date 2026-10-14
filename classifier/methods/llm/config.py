@@ -1,10 +1,11 @@
-"""Load LLM settings from the environment (OpenAI-compatible providers)."""
+"""Load LLM settings from the environment (chat or systemone providers)."""
 
 from __future__ import annotations
 
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 from classifier.methods.llm.errors import LlmConfigError
 
@@ -13,6 +14,8 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 
 # Used only when LLM_BASE_URL is unset. Override per provider in .env.
 DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
+
+ApiMode = Literal["chat", "systemone"]
 
 
 def load_dotenv_files() -> None:
@@ -35,11 +38,24 @@ def _env(name: str, default: str = "") -> str:
     return (os.getenv(name) or default).strip()
 
 
+def parse_api_mode(raw: str | None = None) -> ApiMode:
+    value = (raw if raw is not None else _env("LLM_API_MODE", "chat")).lower()
+    # Aliases for the TypeSafe / Jev / Tev1 decision API.
+    if value in {"systemone", "jev", "tev", "tev1", "typesafe", "decision"}:
+        return "systemone"
+    if value in {"chat", "openai", "openai_chat"}:
+        return "chat"
+    raise LlmConfigError(
+        f"unknown LLM_API_MODE={value!r}; use 'chat' or 'systemone'"
+    )
+
+
 @dataclass(frozen=True)
 class LlmSettings:
     api_key: str
     model: str
     base_url: str
+    api_mode: ApiMode
     app_url: str | None
     app_title: str | None
     max_retries: int
@@ -60,6 +76,7 @@ def read_settings() -> LlmSettings:
         api_key=_env("LLM_API_KEY"),
         model=_env("LLM_MODEL"),
         base_url=base_url.rstrip("/"),
+        api_mode=parse_api_mode(),
         app_url=_env("LLM_APP_URL") or None,
         app_title=_env("LLM_APP_TITLE") or None,
         max_retries=max_retries,
@@ -102,7 +119,7 @@ def _silence_python314_langchain_noise() -> None:
 
 
 def require_langchain() -> None:
-    """Raise LlmConfigError if LangChain / OpenAI-compatible chat deps are missing."""
+    """Raise LlmConfigError if LangChain / OpenAI chat deps are missing (chat mode)."""
     _silence_python314_langchain_noise()
     try:
         import langchain  # noqa: F401

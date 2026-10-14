@@ -1,4 +1,4 @@
-"""OpenRouter + LangChain agent classifier (method name: "llm")."""
+"""LLM classifier (method name: "llm"): OpenAI chat agent or systemone decisions."""
 
 from __future__ import annotations
 
@@ -19,53 +19,66 @@ from classifier.types import Classification, Email
 
 
 class LlmClassifier:
-    """Agent over OpenRouter. Falls back to rules on config / network failures."""
+    """Remote model classifier. Falls back to rules on config / network failures."""
 
     name = "llm"
 
     def __init__(self, settings: LlmSettings | None = None) -> None:
         self._settings = settings or read_settings()
         self._agent: Any | None = None
-        self._agent_error: str | None = None
+        self._ready = False
+        self._setup_error: str | None = None
         self.llm_successes = 0
         self.fallback_count = 0
-        self._prepare_agent()
+        self._prepare()
 
-    def _prepare_agent(self) -> None:
-        """Validate config and build the agent once. Defer failures until classify()."""
+    def _prepare(self) -> None:
+        """Validate config; build chat agent only when LLM_API_MODE=chat."""
         try:
-            # Settings first so a missing key falls back without requiring LangChain.
             self._settings = require_settings(self._settings)
+            if self._settings.api_mode == "systemone":
+                self._ready = True
+                self._setup_error = None
+                log(
+                    f"[llm] systemone mode model={self._settings.model} "
+                    f"base_url={self._settings.base_url}"
+                )
+                return
+
             require_langchain()
             log(
-                f"[llm] building agent model={self._settings.model} "
+                f"[llm] building chat agent model={self._settings.model} "
                 f"base_url={self._settings.base_url} "
                 f"retries={self._settings.max_retries}"
             )
             from classifier.methods.llm.agent import build_agent
 
             self._agent = build_agent(self._settings)
-            self._agent_error = None
-            log("[llm] agent ready")
+            self._ready = True
+            self._setup_error = None
+            log("[llm] chat agent ready")
         except LlmConfigError as exc:
+            self._ready = False
             self._agent = None
-            self._agent_error = str(exc)
-            log(f"[llm] agent not available: {exc}")
-        except Exception as exc:  # noqa: BLE001 — surface unexpected build errors
+            self._setup_error = str(exc)
+            log(f"[llm] not available: {exc}")
+        except Exception as exc:  # noqa: BLE001
+            self._ready = False
             self._agent = None
-            self._agent_error = f"agent build failed: {exc}"
-            log(f"[llm] agent build failed: {exc}")
+            self._setup_error = f"setup failed: {exc}"
+            log(f"[llm] setup failed: {exc}")
 
     def classify(self, email: Email) -> Classification:
         email_id = email.get("id", "?")
-        if self._agent is None:
-            return self._handle_failure(email, self._agent_error or "agent unavailable")
+        if not self._ready:
+            return self._handle_failure(email, self._setup_error or "llm unavailable")
 
         last_error: str | None = None
         attempts = self._settings.max_retries
         for attempt in range(1, attempts + 1):
             try:
-                log(f"[llm] invoke id={email_id} attempt={attempt}/{attempts} …")
+                mode = self._settings.api_mode
+                log(f"[llm] invoke id={email_id} mode={mode} attempt={attempt}/{attempts} …")
                 started = time.monotonic()
                 result = self._invoke_once(email)
                 elapsed = time.monotonic() - started
@@ -88,6 +101,11 @@ class LlmClassifier:
         return self._handle_failure(email, last_error or "unknown error")
 
     def _invoke_once(self, email: Email) -> Classification:
+        if self._settings.api_mode == "systemone":
+            from classifier.methods.llm.systemone import classify_via_systemone
+
+            return classify_via_systemone(email, self._settings)
+
         from classifier.methods.llm.agent import extract_structured_result, invoke_agent
 
         assert self._agent is not None

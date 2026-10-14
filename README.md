@@ -36,17 +36,21 @@ emails JSON  →  executor  →  Classifier.classify(email)  →  Classification
                     registry: "rules" | "llm"
 ```
 
-`--method llm` sends the email (from, subject, body, attachment names) to any **OpenAI-compatible** chat API via LangChain `ChatOpenAI` + `create_agent`, and collects labels through a `ToolStrategy` `ClassificationResult` (`source`, `topic`, `reason`). No helper tools. Steps are capped with `LLM_RECURSION_LIMIT` (default 3 — needed for model + structured tool; `1` stops before any result).
+`--method llm` supports two API modes via `LLM_API_MODE`:
 
-Configure only generic env vars (see [`.env.example`](.env.example)):
+| Mode | When to use | How it works |
+| --- | --- | --- |
+| `chat` (default) | OpenAI-compatible chat (OpenRouter, Ollama gemma/llama, …) | LangChain `ChatOpenAI` + `ToolStrategy` `ClassificationResult` |
+| `systemone` | TypeSafe / Jev / Tev1 decision models | One POST to `{LLM_BASE_URL}/systemone` with two `choice` questions (source, topic) |
 
 | Variable | Meaning |
 | --- | --- |
-| `LLM_API_KEY` | Provider API key |
+| `LLM_API_MODE` | `chat` or `systemone` (aliases: `tev1`, `jev`, `typesafe`) |
+| `LLM_API_KEY` | Provider API key (`ollama` is fine for local Ollama) |
 | `LLM_MODEL` | Model id |
-| `LLM_BASE_URL` | OpenAI-compatible base URL (default `https://openrouter.ai/api/v1`) |
+| `LLM_BASE_URL` | API root (default `https://openrouter.ai/api/v1`) |
 
-Switch provider by changing those three values in `.env` — no code changes.
+For Tev1 on Ollama: `LLM_API_MODE=systemone`, `LLM_MODEL=tev1`, `LLM_BASE_URL=http://localhost:11434/v1`.
 
 ## Methods
 
