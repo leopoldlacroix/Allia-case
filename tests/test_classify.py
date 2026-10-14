@@ -103,6 +103,9 @@ class RegistryTests(unittest.TestCase):
         classifier = get_classifier("rules")
         self.assertEqual(classifier.name, "rules")
 
+    def test_llm_is_registered(self) -> None:
+        self.assertIn("llm", available_methods())
+
     def test_unknown_method_raises(self) -> None:
         with self.assertRaises(ValueError):
             get_classifier("does-not-exist")
