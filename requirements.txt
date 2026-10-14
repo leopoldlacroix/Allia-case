@@ -1,5 +1,7 @@
-# Core LLM method (optional for --method rules; required for --method llm)
-langchain>=1.0,<2
-langchain-openrouter>=0.1,<1
+# Core LLM method (optional for --method rules; required for --method llm).
+# Pin floors to current releases; re-run: pip install -U -r requirements.txt
+langchain>=1.4.5,<2
+langchain-core>=1.6.10,<2
+langchain-openrouter>=0.2.9,<1
 python-dotenv>=1.0,<2
-pydantic>=2.0,<3
+pydantic>=2.12,<3

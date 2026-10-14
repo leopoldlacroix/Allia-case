@@ -51,9 +51,11 @@ Requires [`requirements.txt`](requirements.txt) and a `.env` (see [`.env.example
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -U -r requirements.txt
 # set OPENROUTER_API_KEY and OPENROUTER_MODEL in .env (free slug recommended)
 ```
+
+On Python 3.14, LangChain may still ship a harmless Pydantic v1 compatibility warning upstream; this project filters it when loading the llm method.
 
 **Fail-safes:** missing key/model/packages, timeouts, rate limits, and connection errors fall back to **rules** per email (reason starts with `llm unavailable …; used rules:`). Set `LLM_FALLBACK=0` or pass `--no-fallback` to fail fast while debugging. `LLM_STRICT=1` raises on bad config instead of falling back.
 
