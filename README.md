@@ -69,9 +69,11 @@ python3 -m classifier.review data/sample_accountant_emails.json \
 
 # or run rules + every Ollama profile, then compare:
 ./scripts/run_ollama_suite.sh
+LIMIT=3 WORKERS=4 ./scripts/run_ollama_suite.sh   # smoke
+RESULTS=/tmp/my-runs ./scripts/run_ollama_suite.sh  # custom folder
 ```
 
-Each run writes `runs/results/<timestamp>_<method>_<model>_<tag>.json` (use `--no-save` to skip). See [`runs/README.md`](runs/README.md).
+Each run writes `<outputs-dir>/<timestamp>_<method>_<model>_<tag>.json` (default `runs/results/`; any `--outputs-dir` works). Use `--no-save` to skip. `--workers N` overlaps emails; `--limit N` classifies only the first N. See [`runs/README.md`](runs/README.md).
 
 ## Methods
 

@@ -185,8 +185,12 @@ def write_review(
     tag: str | None = None,
     save: bool = True,
     outputs_dir: str | Path = Path("runs/results"),
+    workers: int = 1,
+    limit: int | None = None,
 ) -> Path:
     emails = load_emails(emails_path)
+    if limit is not None:
+        emails = emails[:limit]
     results = run(
         emails_path,
         method=method,
@@ -195,6 +199,8 @@ def write_review(
         tag=tag,
         save=save,
         outputs_dir=outputs_dir,
+        workers=workers,
+        limit=limit,
     )
     labels = load_labels(labels_path) if labels_path else None
     html_doc = render_review(emails, results, labels, method, emails_path)
@@ -249,6 +255,8 @@ def main(argv: list[str] | None = None) -> None:
             tag=args.tag,
             save=not args.no_save,
             outputs_dir=args.outputs_dir,
+            workers=args.workers,
+            limit=args.limit,
         )
     except (OSError, ValueError, KeyError, RuntimeError) as exc:
         print(f"error: {exc}", file=sys.stderr)

@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from classifier.cli_options import (
@@ -62,6 +63,64 @@ def _resolve_llm_settings(
     return read_settings(env_file=env_file, overrides=overrides)
 
 
+def _short_subject(email: Email) -> str:
+    subject = (email.get("subject") or "(no subject)").replace("\n", " ")
+    if len(subject) > 70:
+        return subject[:67] + "..."
+    return subject
+
+
+def _classify_all(
+    classifier: Classifier,
+    emails: list[Email],
+    *,
+    workers: int,
+) -> list[Classification]:
+    """Classify emails sequentially or with a thread pool; preserve order."""
+    total = len(emails)
+    workers = max(1, workers)
+
+    if workers == 1:
+        results: list[Classification] = []
+        for index, email in enumerate(emails, start=1):
+            log(
+                f"[classifier] {index}/{total} start  "
+                f"id={email.get('id', '?')}  {_short_subject(email)}"
+            )
+            result = classifier.classify(email)
+            results.append(result)
+            log(
+                f"[classifier] {index}/{total} done   "
+                f"method={result.method} source={result.source} topic={result.topic}"
+            )
+        return results
+
+    log(f"[classifier] workers={workers} (parallel)")
+    ordered: list[Classification | None] = [None] * total
+
+    def _one(index: int, email: Email) -> tuple[int, Classification]:
+        log(
+            f"[classifier] {index}/{total} start  "
+            f"id={email.get('id', '?')}  {_short_subject(email)}"
+        )
+        return index, classifier.classify(email)
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = [
+            pool.submit(_one, index, email)
+            for index, email in enumerate(emails, start=1)
+        ]
+        for future in as_completed(futures):
+            index, result = future.result()
+            ordered[index - 1] = result
+            log(
+                f"[classifier] {index}/{total} done   "
+                f"method={result.method} source={result.source} topic={result.topic}"
+            )
+
+    return [result for result in ordered if result is not None]
+
+
 def run(
     emails_path: str | Path,
     method: str = "rules",
@@ -72,29 +131,24 @@ def run(
     tag: str | None = None,
     save: bool = True,
     outputs_dir: str | Path = Path("runs/results"),
+    workers: int = 1,
+    limit: int | None = None,
 ) -> list[Classification]:
     """Classify every email in emails_path with the chosen method."""
     if allow_fallback is False:
         os.environ["LLM_FALLBACK"] = "0"
     settings = _resolve_llm_settings(method, env_file=env_file, overrides=overrides)
     emails = load_emails(emails_path)
+    if limit is not None:
+        if limit < 1:
+            raise ValueError("--limit must be >= 1")
+        emails = emails[:limit]
     total = len(emails)
     log(f"[classifier] method={method} emails={total} path={emails_path}")
     if tag:
         log(f"[classifier] tag={tag}")
     classifier = get_classifier(method, settings=settings)
-    results: list[Classification] = []
-    for index, email in enumerate(emails, start=1):
-        subject = (email.get("subject") or "(no subject)").replace("\n", " ")
-        if len(subject) > 70:
-            subject = subject[:67] + "..."
-        log(f"[classifier] {index}/{total} start  id={email.get('id', '?')}  {subject}")
-        result = classifier.classify(email)
-        results.append(result)
-        log(
-            f"[classifier] {index}/{total} done   "
-            f"method={result.method} source={result.source} topic={result.topic}"
-        )
+    results = _classify_all(classifier, emails, workers=workers)
     _maybe_print_summary(classifier)
 
     if save:
@@ -126,6 +180,8 @@ def run_as_dicts(
     tag: str | None = None,
     save: bool = True,
     outputs_dir: str | Path = Path("runs/results"),
+    workers: int = 1,
+    limit: int | None = None,
 ) -> list[dict[str, str]]:
     return [
         result.to_dict()
@@ -138,6 +194,8 @@ def run_as_dicts(
             tag=tag,
             save=save,
             outputs_dir=outputs_dir,
+            workers=workers,
+            limit=limit,
         )
     ]
 
@@ -185,6 +243,8 @@ def main(argv: list[str] | None = None) -> None:
             tag=args.tag,
             save=not args.no_save,
             outputs_dir=args.outputs_dir,
+            workers=args.workers,
+            limit=args.limit,
         )
     except (OSError, ValueError, KeyError, RuntimeError) as exc:
         print(f"error: {exc}", file=sys.stderr)

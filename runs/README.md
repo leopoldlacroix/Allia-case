@@ -22,4 +22,14 @@ Run all of them (plus rules) and build the compare page:
 
 ```bash
 ./scripts/run_ollama_suite.sh
+
+# faster smoke (first 3 emails, 4 parallel workers)
+LIMIT=3 WORKERS=4 ./scripts/run_ollama_suite.sh
+
+# custom results folder
+RESULTS=/tmp/allia-runs ./scripts/run_ollama_suite.sh
 ```
+
+Results can live anywhere — pass `--outputs-dir` to review/classifier, and the same path to `classifier.compare`. Default is `runs/results`.
+
+**Speed note:** `--workers N` overlaps email requests. On a single local Ollama GPU that often still queues, so wall-clock may not drop linearly; systemone / remote APIs benefit more. Use `LIMIT` for quick label-check loops.

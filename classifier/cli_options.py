@@ -52,7 +52,20 @@ def add_run_artifact_args(parser: argparse.ArgumentParser) -> None:
         "--outputs-dir",
         type=Path,
         default=Path("runs/results"),
-        help="Directory for run JSON files (default: runs/results).",
+        help="Directory for run JSON files (default: runs/results). Any path is fine.",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Classify this many emails in parallel (default: 1). Helps when the "
+        "provider can overlap requests; local Ollama often still serializes on GPU.",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Only classify the first N emails (smoke / faster compare).",
     )
 
 
