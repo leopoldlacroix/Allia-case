@@ -16,6 +16,7 @@ classifier/
   types.py                 # Email in, Classification out, Classifier protocol
   registry.py              # method name → implementation
   executor.py              # load any emails JSON + run a method
+  review.py                # static HTML review page for eyeballing results
   methods/
     rules/                 # current method: address + keyword rules
       source.py
@@ -23,6 +24,7 @@ classifier/
 data/
   sample_accountant_emails.json   # input format (untouched)
   eval_labels.json                # provisional gold labels by id
+  review.html                     # generated locally (gitignored)
 tests/
 docs/assignement.md
 ```
@@ -79,3 +81,16 @@ python3 -m unittest discover -s tests
 ```
 
 Output is a JSON list of `id`, `source`, `topic`, `reason`, and `method`.
+
+## Review in the browser
+
+Generate a static HTML page (predicted labels, eval labels, expandable body):
+
+```bash
+python3 -m classifier.review data/sample_accountant_emails.json \
+  --method rules \
+  --labels data/eval_labels.json \
+  --out data/review.html
+```
+
+Open `data/review.html` in a browser. The file is gitignored; regenerate anytime.
