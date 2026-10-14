@@ -8,6 +8,8 @@ To add a method later:
 
 from __future__ import annotations
 
+from typing import Any
+
 from classifier.methods.rules import RulesClassifier
 from classifier.types import Classifier
 
@@ -19,20 +21,20 @@ def available_methods() -> list[str]:
     return sorted(_METHOD_NAMES)
 
 
-def get_classifier(method: str) -> Classifier:
+def get_classifier(method: str, settings: Any | None = None) -> Classifier:
     try:
-        return _load_classifier(method)
+        return _load_classifier(method, settings=settings)
     except KeyError as exc:
         known = ", ".join(available_methods()) or "(none)"
         raise ValueError(f"unknown method {method!r}; choose one of: {known}") from exc
 
 
-def _load_classifier(method: str) -> Classifier:
+def _load_classifier(method: str, settings: Any | None = None) -> Classifier:
     if method == RulesClassifier.name:
         return RulesClassifier()
     if method == "llm":
         # Lazy import: rules-only users never need LangChain installed.
         from classifier.methods.llm import LlmClassifier
 
-        return LlmClassifier()
+        return LlmClassifier(settings)
     raise KeyError(method)

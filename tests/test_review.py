@@ -22,6 +22,7 @@ class ReviewTests(unittest.TestCase):
                 out,
                 method="rules",
                 labels_path=EVAL_LABELS,
+                save=False,
             )
             text = out.read_text(encoding="utf-8")
             self.assertIn("<!DOCTYPE html>", text)

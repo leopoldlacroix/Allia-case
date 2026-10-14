@@ -12,6 +12,11 @@ import html
 import sys
 from pathlib import Path
 
+from classifier.cli_options import (
+    add_llm_config_args,
+    add_run_artifact_args,
+    overrides_from_args,
+)
 from classifier.executor import load_emails, load_labels, run
 from classifier.registry import available_methods
 from classifier.types import Classification, Email, Source, Topic
@@ -174,9 +179,23 @@ def write_review(
     out_path: str | Path,
     method: str = "rules",
     labels_path: str | Path | None = None,
+    *,
+    env_file: str | Path | None = None,
+    overrides=None,
+    tag: str | None = None,
+    save: bool = True,
+    outputs_dir: str | Path = Path("data/outputs"),
 ) -> Path:
     emails = load_emails(emails_path)
-    results = run(emails_path, method=method)
+    results = run(
+        emails_path,
+        method=method,
+        env_file=env_file,
+        overrides=overrides,
+        tag=tag,
+        save=save,
+        outputs_dir=outputs_dir,
+    )
     labels = load_labels(labels_path) if labels_path else None
     html_doc = render_review(emails, results, labels, method, emails_path)
     out = Path(out_path)
@@ -212,6 +231,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("data/review.html"),
         help="Output HTML path (default: data/review.html).",
     )
+    add_llm_config_args(parser)
+    add_run_artifact_args(parser)
     return parser
 
 
@@ -223,8 +244,13 @@ def main(argv: list[str] | None = None) -> None:
             args.out,
             method=args.method,
             labels_path=args.labels,
+            env_file=args.env_file,
+            overrides=overrides_from_args(args),
+            tag=args.tag,
+            save=not args.no_save,
+            outputs_dir=args.outputs_dir,
         )
-    except (OSError, ValueError, KeyError) as exc:
+    except (OSError, ValueError, KeyError, RuntimeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
     print(f"wrote {out}")

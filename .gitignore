@@ -8,4 +8,11 @@ venv/
 .mypy_cache/
 data/review.html
 data/review_*.html
+data/compare.html
+data/outputs/
 .env
+.env.tev
+.env.chat*
+!.env.example
+!.env.tev.example
+!.env.chat.example

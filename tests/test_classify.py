@@ -70,7 +70,7 @@ class EvalSetTests(unittest.TestCase):
             json.dump(payload, handle)
             path = Path(handle.name)
         try:
-            results = run(path, method="rules")
+            results = run(path, method="rules", save=False)
         finally:
             path.unlink()
         self.assertEqual(len(results), 1)
@@ -80,7 +80,7 @@ class EvalSetTests(unittest.TestCase):
     def test_cli_prints_classifications(self) -> None:
         buffer = io.StringIO()
         with redirect_stdout(buffer):
-            main([str(SAMPLE), "--method", "rules"])
+            main([str(SAMPLE), "--method", "rules", "--no-save"])
         payload = json.loads(buffer.getvalue())
         labels = load_labels(EVAL_LABELS)
         self.assertEqual(len(payload), 20)

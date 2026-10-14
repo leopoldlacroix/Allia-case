@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Literal
 
@@ -18,13 +18,18 @@ DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
 ApiMode = Literal["chat", "systemone"]
 
 
-def load_dotenv_files() -> None:
-    """Load `.env` from the repo root if python-dotenv is installed."""
+def load_dotenv_files(env_file: str | Path | None = None) -> None:
+    """Load `.env`, then optional profile file (profile wins on conflicts)."""
     try:
         from dotenv import load_dotenv
     except ImportError:
         return
     load_dotenv(_REPO_ROOT / ".env", override=False)
+    if env_file is not None:
+        path = Path(env_file)
+        if not path.is_file():
+            raise LlmConfigError(f"env file not found: {path}")
+        load_dotenv(path, override=True)
 
 
 def env_flag(name: str, default: bool) -> bool:
@@ -63,16 +68,34 @@ class LlmSettings:
     strict: bool
 
 
-def read_settings() -> LlmSettings:
-    """Read settings after dotenv load. Does not validate completeness."""
-    load_dotenv_files()
+@dataclass(frozen=True)
+class LlmOverrides:
+    """Optional CLI overrides applied after env files."""
+
+    api_key: str | None = None
+    model: str | None = None
+    base_url: str | None = None
+    api_mode: str | None = None
+
+
+def read_settings(
+    *,
+    env_file: str | Path | None = None,
+    overrides: LlmOverrides | None = None,
+) -> LlmSettings:
+    """Read settings after dotenv load. Does not validate completeness.
+
+    Load order: process env → repo `.env` (fill gaps) → `--env-file` (override)
+    → CLI overrides last.
+    """
+    load_dotenv_files(env_file)
     retries_raw = _env("LLM_MAX_RETRIES", "3") or "3"
     try:
         max_retries = max(1, int(retries_raw))
     except ValueError:
         max_retries = 3
     base_url = _env("LLM_BASE_URL") or DEFAULT_BASE_URL
-    return LlmSettings(
+    settings = LlmSettings(
         api_key=_env("LLM_API_KEY"),
         model=_env("LLM_MODEL"),
         base_url=base_url.rstrip("/"),
@@ -83,6 +106,27 @@ def read_settings() -> LlmSettings:
         allow_fallback=env_flag("LLM_FALLBACK", True),
         strict=env_flag("LLM_STRICT", False),
     )
+    if overrides is None:
+        return settings
+    updates: dict[str, object] = {}
+    if overrides.api_key is not None:
+        updates["api_key"] = overrides.api_key.strip()
+    if overrides.model is not None:
+        updates["model"] = overrides.model.strip()
+    if overrides.base_url is not None:
+        updates["base_url"] = overrides.base_url.strip().rstrip("/")
+    if overrides.api_mode is not None:
+        updates["api_mode"] = parse_api_mode(overrides.api_mode)
+    return replace(settings, **updates) if updates else settings
+
+
+def settings_public(settings: LlmSettings) -> dict[str, str]:
+    """Non-secret snapshot for run artifacts / compare UI."""
+    return {
+        "api_mode": settings.api_mode,
+        "model": settings.model,
+        "base_url": settings.base_url,
+    }
 
 
 def require_settings(settings: LlmSettings | None = None) -> LlmSettings:

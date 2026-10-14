@@ -13,7 +13,13 @@ import os
 import sys
 from pathlib import Path
 
+from classifier.cli_options import (
+    add_llm_config_args,
+    add_run_artifact_args,
+    overrides_from_args,
+)
 from classifier.log import log
+from classifier.outputs import save_run
 from classifier.registry import available_methods, get_classifier
 from classifier.types import Classification, Classifier, Email, Source, Topic
 
@@ -43,19 +49,40 @@ def load_labels(path: str | Path) -> dict[str, tuple[Source, Topic]]:
     return labels
 
 
+def _resolve_llm_settings(
+    method: str,
+    *,
+    env_file: str | Path | None = None,
+    overrides=None,
+):
+    if method != "llm":
+        return None
+    from classifier.methods.llm.config import read_settings
+
+    return read_settings(env_file=env_file, overrides=overrides)
+
+
 def run(
     emails_path: str | Path,
     method: str = "rules",
     *,
     allow_fallback: bool | None = None,
+    env_file: str | Path | None = None,
+    overrides=None,
+    tag: str | None = None,
+    save: bool = True,
+    outputs_dir: str | Path = Path("data/outputs"),
 ) -> list[Classification]:
     """Classify every email in emails_path with the chosen method."""
     if allow_fallback is False:
         os.environ["LLM_FALLBACK"] = "0"
+    settings = _resolve_llm_settings(method, env_file=env_file, overrides=overrides)
     emails = load_emails(emails_path)
     total = len(emails)
     log(f"[classifier] method={method} emails={total} path={emails_path}")
-    classifier = get_classifier(method)
+    if tag:
+        log(f"[classifier] tag={tag}")
+    classifier = get_classifier(method, settings=settings)
     results: list[Classification] = []
     for index, email in enumerate(emails, start=1):
         subject = (email.get("subject") or "(no subject)").replace("\n", " ")
@@ -69,6 +96,23 @@ def run(
             f"method={result.method} source={result.source} topic={result.topic}"
         )
     _maybe_print_summary(classifier)
+
+    if save:
+        settings_snap = None
+        if settings is not None:
+            from classifier.methods.llm.config import settings_public
+
+            settings_snap = settings_public(settings)
+        path = save_run(
+            results,
+            method=method,
+            emails_path=emails_path,
+            tag=tag,
+            settings=settings_snap,
+            outputs_dir=outputs_dir,
+        )
+        log(f"[classifier] saved {path}")
+
     return results
 
 
@@ -77,10 +121,24 @@ def run_as_dicts(
     method: str = "rules",
     *,
     allow_fallback: bool | None = None,
+    env_file: str | Path | None = None,
+    overrides=None,
+    tag: str | None = None,
+    save: bool = True,
+    outputs_dir: str | Path = Path("data/outputs"),
 ) -> list[dict[str, str]]:
     return [
         result.to_dict()
-        for result in run(emails_path, method=method, allow_fallback=allow_fallback)
+        for result in run(
+            emails_path,
+            method=method,
+            allow_fallback=allow_fallback,
+            env_file=env_file,
+            overrides=overrides,
+            tag=tag,
+            save=save,
+            outputs_dir=outputs_dir,
+        )
     ]
 
 
@@ -110,6 +168,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="For --method llm: fail instead of falling back to rules.",
     )
+    add_llm_config_args(parser)
+    add_run_artifact_args(parser)
     return parser
 
 
@@ -120,6 +180,11 @@ def main(argv: list[str] | None = None) -> None:
             args.emails,
             method=args.method,
             allow_fallback=False if args.no_fallback else None,
+            env_file=args.env_file,
+            overrides=overrides_from_args(args),
+            tag=args.tag,
+            save=not args.no_save,
+            outputs_dir=args.outputs_dir,
         )
     except (OSError, ValueError, KeyError, RuntimeError) as exc:
         print(f"error: {exc}", file=sys.stderr)

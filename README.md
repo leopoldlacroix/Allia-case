@@ -17,13 +17,16 @@ classifier/
   registry.py              # method name → implementation
   executor.py              # load any emails JSON + run a method
   review.py                # static HTML review page for eyeballing results
+  outputs.py               # save run JSON under data/outputs/
+  compare.py               # side-by-side dashboard from saved runs
   methods/
     rules/                 # address + keyword rules
-    llm/                   # OpenRouter + LangChain agent (optional deps)
+    llm/                   # chat or systemone (optional deps)
 data/
   sample_accountant_emails.json
   eval_labels.json
-  review.html              # generated locally (gitignored)
+  outputs/                 # saved runs (gitignored)
+  review.html / compare.html
 tests/
 docs/assignement.md
 ```
@@ -51,6 +54,23 @@ emails JSON  →  executor  →  Classifier.classify(email)  →  Classification
 | `LLM_BASE_URL` | API root (default `https://openrouter.ai/api/v1`) |
 
 For Tev1 on Ollama: `LLM_API_MODE=systemone`, `LLM_MODEL=tev1`, `LLM_BASE_URL=http://localhost:11434/v1`.
+
+### Profiles and CLI overrides
+
+Prefer a profile env file per model instead of editing `.env` between runs. Load order: process env → repo `.env` → `--env-file` → `--model` / `--api-mode` / `--base-url` / `--api-key`.
+
+```bash
+# examples (no secrets): .env.tev.example, .env.chat.example
+python3 -m classifier.review data/sample_accountant_emails.json \
+  --method llm --env-file .env.tev --tag tev1 \
+  --labels data/eval_labels.json --out data/review_tev.html
+
+python3 -m classifier.review data/sample_accountant_emails.json \
+  --method llm --env-file .env.chat-gemma --tag gemma \
+  --labels data/eval_labels.json --out data/review_gemma.html
+```
+
+Each run also writes `data/outputs/<timestamp>_<method>_<model>_<tag>.json` (use `--no-save` to skip).
 
 ## Methods
 
@@ -112,7 +132,8 @@ Change the launch `args` (or run `python scripts/debug_one_email.py <index-or-id
 python3 -m classifier.review data/sample_accountant_emails.json \
   --method rules \
   --labels data/eval_labels.json \
-  --out data/review.html
+  --out data/review.html \
+  --tag rules
 
 python3 -m classifier.review data/sample_accountant_emails.json \
   --method llm \
@@ -121,3 +142,16 @@ python3 -m classifier.review data/sample_accountant_emails.json \
 ```
 
 Open `data/review.html` in a browser. The file is gitignored; regenerate anytime.
+
+## Compare runs (check labels)
+
+After several runs (rules, chat, tev, …), build a dashboard with overall scores and a per-email table. When ≥2 runs agree with each other but disagree with eval, the page shows a **label check?** badge so you can inspect the body and fix [`data/eval_labels.json`](data/eval_labels.json) if needed.
+
+```bash
+python3 -m classifier.compare \
+  --emails data/sample_accountant_emails.json \
+  --labels data/eval_labels.json \
+  --out data/compare.html
+```
+
+Open `data/compare.html`. Pass `--inputs path1.json path2.json` to compare a subset of `data/outputs/`.
